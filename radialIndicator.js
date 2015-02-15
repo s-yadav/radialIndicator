@@ -297,6 +297,7 @@
         maxValue: 100, //maximum value
         initValue: 0 //define initial value of indicator
     };
+    
     window.radialIndicator = radialIndicator;
 
     //add as a jquery plugin
@@ -309,4 +310,4 @@
         };
     }
 
-}(jQuery, window, document, undefined));
+}(window.jQuery, window, document, void 0));
