@@ -6,39 +6,44 @@
 */
 
 /* Angular hook for radialIndicator */
-;(function (angular) {
-    angular.module('radialIndicator',[]).directive('radialIndicator', ['radialIndicatorConfig',
+;
+(function (angular) {
+    angular.module('radialIndicator', []).directive('radialIndicator', ['radialIndicatorInstance',
 
-    function (radialIndicatorConfig) {
+    function (radialIndicatorInstance) {
             return {
                 restrict: 'A',
                 link: function (scope, element, attrs) {
                     var element = element,
                         id = attrs.radialIndicatorId,
-                        options = scope.$eval(attrs.radialIndicator);
+                        options = scope.$eval(attrs.radialIndicator),
+                        model = attrs.radialIndicatorModel;
 
                     var indInstance = radialIndicator(element, options);
 
                     //store indicator instance on radialIndicatorConfig so can get through dependency injection
-                    if (id) radialIndicatorConfig.indicators[id] = indInstance;
+                    if (id) radialIndicatorInstance[id] = indInstance;
+
+                    //watch for modal change
+                    scope.$watch(model, function (newValue) {
+                        indInstance.value(newValue);
+                    });
 
                     //delete the idnicator instance when scope dies
                     scope.$on('$destroy', function () {
-                        if (id) delete radialIndicatorConfig.indicators[id];
+                        if (id) delete radialIndicatorInstance[id];
                     });
 
                 }
             }
     }])
-    //a factory to store radial indicators and defaults which can be injected to controllers or directive to get the instance or default values
-    .factory('radialIndicatorConfig', function () {
+    //a factory to store radial indicators instances which can be injected to controllers or directive to get any indicators instance
+    .factory('radialIndicatorInstance', function () {
         if (!window.radialIndicator) throw "Please include radialIndicator.js";
-        
-        var indConfig = {};
-        indConfig.defaults = radialIndicator.defaults;
-        indConfig.indicators = {};
-        
-        return indConfig;
-        
+
+        var radialIndicatorInstance = {};
+
+        return radialIndicatorInstance;
+
     });
-}(window.angular));
+}(angular));
