@@ -1,5 +1,5 @@
 /*
-    radialIndicator.js v 1.0.0
+    radialIndicator.js v 1.0.1
     Author: Sudhanshu Yadav
     Copyright (c) 2015 Sudhanshu Yadav - ignitersworld.com , released under the MIT license.
     Demo on: ignitersworld.com/lab/radialIndicator.html
@@ -11,8 +11,34 @@
     var circ = Math.PI * 2,
         quart = Math.PI / 2;
 
-    //function to convert hex to rgb
 
+    //function to smooth canvas drawing for ratina devices 
+
+    //method to manage device pixel ratio in ratina devices
+    var smoothCanvas = (function () {
+
+        var ctx = document.createElement("canvas").getContext("2d"),
+            dpr = window.devicePixelRatio || 1,
+            bsr = ctx.webkitBackingStorePixelRatio ||
+            ctx.mozBackingStorePixelRatio ||
+            ctx.msBackingStorePixelRatio ||
+            ctx.oBackingStorePixelRatio ||
+            ctx.backingStorePixelRatio || 1,
+
+            ratio = dpr / bsr; //PIXEL RATIO
+
+        return function (w, h, canvasElm) {
+            var can = canvasElm || document.createElement("canvas");
+            can.width = w * ratio;
+            can.height = h * ratio;
+            can.style.width = w + "px";
+            can.style.height = h + "px";
+            can.getContext("2d").setTransform(ratio, 0, 0, ratio, 0, 0);
+            return can;
+        }
+    }());
+
+    //function to convert hex to rgb
     function hexToRgb(hex) {
         // Expand shorthand form (e.g. "03F") to full form (e.g. "0033FF")
         var shorthandRegex = /^#?([a-f\d])([a-f\d])([a-f\d])$/i;
@@ -59,7 +85,7 @@
     //function to apply formatting on number depending on parameter
     function formatter(pattern) {
         return function (num) {
-            if(!pattern) return num.toString();
+            if (!pattern) return num.toString();
             num = num || 0
             var numRev = num.toString().split('').reverse(),
                 output = pattern.split("").reverse(),
@@ -76,7 +102,7 @@
             }
 
             //add overflowing numbers before prefix
-            output.splice(lastHashReplaced+1, output.lastIndexOf('#') - lastHashReplaced, numRev.reverse().join(""));
+            output.splice(lastHashReplaced + 1, output.lastIndexOf('#') - lastHashReplaced, numRev.reverse().join(""));
 
             return output.reverse().join('');
         }
@@ -130,8 +156,8 @@
             //maximum text length;
             this.maxLength = indOption.percentage ? 4 : this.formatter(indOption.maxValue).length;
 
-            canElm.width = dim;
-            canElm.height = dim;
+            //smooth the canvas elm for ratina display
+            smoothCanvas(dim, dim, canElm);
 
             //draw a grey circle
             ctx.strokeStyle = indOption.barBgColor; //background circle color
@@ -156,7 +182,7 @@
             }
 
             val = parseInt(val);
-            
+
             var ctx = this.ctx,
                 indOption = this.indOption,
                 curColor = indOption.barColor,
@@ -210,13 +236,12 @@
             if (indOption.displayNumber) {
                 var cFont = ctx.font.split(' '),
                     weight = indOption.fontWeight,
-                    fontSize = indOption.fontSize || (dim / (this.maxLength - (Math.floor(this.maxLength*1.4/4)-1)));
+                    fontSize = indOption.fontSize || (dim / (this.maxLength - (Math.floor(this.maxLength * 1.4 / 4) - 1)));
 
                 cFont = indOption.fontFamily || cFont[cFont.length - 1];
 
-
                 ctx.fillStyle = indOption.fontColor || curColor;
-                ctx.font = weight +" "+ fontSize + "px " + cFont;
+                ctx.font = weight + " " + fontSize + "px " + cFont;
                 ctx.textAlign = "center";
                 ctx.textBaseline = 'middle';
                 ctx.fillText(dispVal, center, center);
@@ -234,7 +259,7 @@
                 back = val < counter;
 
             //clear interval function if already started
-            if (this.intvFunc) clearInterval(this.intvFunc); 
+            if (this.intvFunc) clearInterval(this.intvFunc);
 
             this.intvFunc = setInterval(function () {
 
@@ -288,7 +313,7 @@
         fontColor: null, //font color
         fontFamily: null, //defines font family
         fontWeight: 'bold', //defines font weight
-        fontSize : null, //define the font size of indicator number
+        fontSize: null, //define the font size of indicator number
         interpolate: true, //interpolate color between ranges
         percentage: false, //show percentage of value
         displayNumber: true, //display indicator number
@@ -297,7 +322,7 @@
         maxValue: 100, //maximum value
         initValue: 0 //define initial value of indicator
     };
-    
+
     window.radialIndicator = radialIndicator;
 
     //add as a jquery plugin
