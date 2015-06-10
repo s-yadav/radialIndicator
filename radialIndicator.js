@@ -16,7 +16,6 @@
 
     //method to manage device pixel ratio in ratina devices
     var smoothCanvas = (function () {
-
         var ctx = document.createElement("canvas").getContext("2d"),
             dpr = window.devicePixelRatio || 1,
             bsr = ctx.webkitBackingStorePixelRatio ||
