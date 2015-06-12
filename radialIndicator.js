@@ -1,5 +1,5 @@
 /*
-    radialIndicator.js v 1.0.1
+    radialIndicator.js v 1.1.0
     Author: Sudhanshu Yadav
     Copyright (c) 2015 Sudhanshu Yadav - ignitersworld.com , released under the MIT license.
     Demo on: ignitersworld.com/lab/radialIndicator.html
@@ -141,13 +141,11 @@
 
     Indicator.prototype = {
         constructor: radialIndicator,
-        init: function () {
+        _init: function () {
             var indOption = this.indOption,
                 canElm = this.canElm,
                 ctx = this.ctx,
-                dim = (indOption.radius + indOption.barWidth) * 2, //elm width and height
-                center = dim / 2; //center point in both x and y axis
-
+                dim = (indOption.radius + indOption.barWidth) * 2; //elm width and height
 
             //create a formatter function
             this.formatter = typeof indOption.format == "function" ? indOption.format : formatter(indOption.format);
@@ -158,20 +156,29 @@
             //smooth the canvas elm for ratina display
             smoothCanvas(dim, dim, canElm);
 
-            //draw a grey circle
-            ctx.strokeStyle = indOption.barBgColor; //background circle color
-            ctx.lineWidth = indOption.barWidth;
-            ctx.beginPath();
-            ctx.arc(center, center, indOption.radius, 0, 2 * Math.PI);
-            ctx.stroke();
-
-            //store the image data after grey circle draw
-            this.imgData = ctx.getImageData(0, 0, dim, dim);
+            //draw background bar
+            this._drawBarBg();
 
             //put the initial value if defined
             this.value(this.current_value);
 
             return this;
+        },
+        //draw background bar
+        _drawBarBg: function () {
+            var indOption = this.indOption,
+                ctx = this.ctx,
+                dim = (indOption.radius + indOption.barWidth) * 2, //elm width and height
+                center = dim / 2; //center point in both x and y axis
+
+            //draw nackground circle
+            ctx.strokeStyle = indOption.barBgColor; //background circle color
+            ctx.lineWidth = indOption.barWidth;
+            if (indOption.barBgColor != "transparent") {
+                ctx.beginPath();
+                ctx.arc(center, center, indOption.radius - 1 + indOption.barWidth / 2, 0, 2 * Math.PI);
+                ctx.stroke();
+            }
         },
         //update the value of indicator without animation
         value: function (val) {
@@ -190,7 +197,7 @@
                 maxVal = indOption.maxValue,
                 center = dim / 2;
 
-            //limit the val in range of 0 to 100
+            //limit the val in range of minumum and maximum value
             val = val < minVal ? minVal : val > maxVal ? maxVal : val;
 
             var perVal = Math.round(((val - minVal) * 100 / (maxVal - minVal)) * 100) / 100, //percentage value tp two decimal precision
@@ -201,7 +208,8 @@
 
 
             //draw the bg circle
-            ctx.putImageData(this.imgData, 0, 0);
+            ctx.clearRect(0, 0, dim, dim);
+            this._drawBarBg();
 
             //get current color if color range is set
             if (typeof curColor == "object") {
@@ -228,7 +236,7 @@
             if (indOption.roundCorner) ctx.lineCap = "round";
 
             ctx.beginPath();
-            ctx.arc(center, center, indOption.radius, -(quart), ((circ) * perVal / 100) - quart, false);
+            ctx.arc(center, center, indOption.radius - 1 + indOption.barWidth / 2, -(quart), ((circ) * perVal / 100) - quart, false);
             ctx.stroke();
 
             //add percentage text
@@ -251,11 +259,19 @@
         //animate progressbar to the value
         animate: function (val) {
 
+
+
             var indOption = this.indOption,
                 counter = this.current_value || indOption.minValue,
                 self = this,
-                incBy = Math.ceil((indOption.maxValue - indOption.minValue) / (indOption.frameNum || (indOption.percentage ? 100 : 500))), //increment by .2% on every tick and 1% if showing as percentage
-                back = val < counter;
+                minVal = indOption.minValue,
+                maxVal = indOption.maxValue,
+                incBy = Math.ceil((maxVal - minVal) / (indOption.frameNum || (indOption.percentage ? 100 : 500))); //increment by .2% on every tick and 1% if showing as percentage
+
+            //limit the val in range of minumum and maximum value
+            val = val < minVal ? minVal : val > maxVal ? maxVal : val;
+
+            var back = val < counter;
 
             //clear interval function if already started
             if (this.intvFunc) clearInterval(this.intvFunc);
@@ -265,6 +281,7 @@
                 if ((!back && counter >= val) || (back && counter <= val)) {
                     if (self.current_value == counter) {
                         clearInterval(self.intvFunc);
+                        if (indOption.onAnimationComplete) indOption.onAnimationComplete(self.current_value);
                         return;
                     } else {
                         counter = val;
@@ -286,7 +303,7 @@
 
             if (['radius', 'barWidth', 'barBgColor', 'format', 'maxValue', 'percentage'].indexOf(key) != -1) {
                 this.indOption[key] = val;
-                this.init().value(this.current_value);
+                this._init().value(this.current_value);
             }
             this.indOption[key] = val;
         }
@@ -296,7 +313,7 @@
     /** Initializer function **/
     function radialIndicator(container, options) {
         var progObj = new Indicator(container, options);
-        progObj.init();
+        progObj._init();
         return progObj;
     }
 
