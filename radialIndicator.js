@@ -1,11 +1,11 @@
 /*
-    radialIndicator.js v 1.1.0
+    radialIndicator.js v 1.2.0
     Author: Sudhanshu Yadav
     Copyright (c) 2015 Sudhanshu Yadav - ignitersworld.com , released under the MIT license.
     Demo on: ignitersworld.com/lab/radialIndicator.html
 */
 
-;(function ($, window, document) {
+;(function($, window, document) {
     "use strict";
     //circumfence and quart value to start bar from top
     var circ = Math.PI * 2,
@@ -15,18 +15,18 @@
     //function to smooth canvas drawing for ratina devices 
 
     //method to manage device pixel ratio in ratina devices
-    var smoothCanvas = (function () {
+    var smoothCanvas = (function() {
         var ctx = document.createElement("canvas").getContext("2d"),
             dpr = window.devicePixelRatio || 1,
             bsr = ctx.webkitBackingStorePixelRatio ||
-            ctx.mozBackingStorePixelRatio ||
-            ctx.msBackingStorePixelRatio ||
-            ctx.oBackingStorePixelRatio ||
-            ctx.backingStorePixelRatio || 1,
+                ctx.mozBackingStorePixelRatio ||
+                ctx.msBackingStorePixelRatio ||
+                ctx.oBackingStorePixelRatio ||
+                ctx.backingStorePixelRatio || 1,
 
             ratio = dpr / bsr; //PIXEL RATIO
 
-        return function (w, h, canvasElm) {
+        return function(w, h, canvasElm) {
             var can = canvasElm || document.createElement("canvas");
             can.width = w * ratio;
             can.height = h * ratio;
@@ -41,7 +41,7 @@
     function hexToRgb(hex) {
         // Expand shorthand form (e.g. "03F") to full form (e.g. "0033FF")
         var shorthandRegex = /^#?([a-f\d])([a-f\d])([a-f\d])$/i;
-        hex = hex.replace(shorthandRegex, function (m, r, g, b) {
+        hex = hex.replace(shorthandRegex, function(m, r, g, b) {
             return r + r + g + g + b + b;
         });
 
@@ -83,7 +83,7 @@
 
     //function to apply formatting on number depending on parameter
     function formatter(pattern) {
-        return function (num) {
+        return function(num) {
             if (!pattern) return num.toString();
             num = num || 0
             var numRev = num.toString().split('').reverse(),
@@ -110,6 +110,8 @@
 
     //circle bar class
     function Indicator(container, indOption) {
+        var self = this;
+
         indOption = indOption || {};
         indOption = merge({}, radialIndicator.defaults, indOption);
 
@@ -136,12 +138,70 @@
         //add intial value 
         this.current_value = indOption.initValue || indOption.minValue || 0;
 
+
+        //handeling user interaction
+        var startListener = function(e) {
+            if (!indOption.interaction) return;
+
+            var touchMove = e.type == "touchstart" ? "touchmove" : "mousemove",
+                touchEnd = e.type == "touchstart" ? "touchend" : "mouseup",
+                position = canElm.getBoundingClientRect(),
+                cy = position.top + canElm.offsetHeight / 2,
+                cx = position.left + canElm.offsetWidth / 2;
+
+            var moveListener = function(e) {
+                e.preventDefault();
+
+                //get the cordinates
+                var mx = e.clientX || e.touches[0].clientX,
+                    my = e.clientY || e.touches[0].clientY,
+                    radian = (circ + quart + Math.atan2((my - cy), (mx - cx))) % (circ + 0.0175),
+                    radius = (indOption.radius - 1 + indOption.barWidth / 2),
+                    circum = circ * radius,
+                    precision = indOption.precision != null ? indOption.precision : 0,
+                    precisionNo = Math.pow(10, precision),
+                    val = Math.round(precisionNo * radian * radius * (indOption.maxValue - indOption.minValue) / circum) / precisionNo;
+
+                self.value(val);
+            };
+
+            var endListener = function() {
+                document.removeEventListener(touchMove, moveListener, false);
+                document.removeEventListener(touchEnd, endListener, false);
+            };
+
+            document.addEventListener(touchMove, moveListener, false);
+            document.addEventListener(touchEnd, endListener, false);
+        };
+
+        canElm.addEventListener('touchstart', startListener, false);
+        canElm.addEventListener('mousedown', startListener, false);
+
+
+        canElm.addEventListener("mousewheel", MouseWheelHandler, false);
+        canElm.addEventListener("DOMMouseScroll", MouseWheelHandler, false);
+
+        function MouseWheelHandler(e) {
+            if (!indOption.interaction) return;
+            e.preventDefault();
+
+            // cross-browser wheel delta
+            var delta = -(Math.max(-1, Math.min(1, (e.wheelDelta || -e.detail)))),
+                precision = indOption.precision != null ? indOption.precision : 0,
+                precisionNo = Math.pow(10, precision),
+                diff = indOption.maxValue - indOption.minValue,
+                val = self.current_value + Math.round(precisionNo * delta * diff / Math.min(diff, 100)) / precisionNo;
+
+            self.value(val);
+
+            return false;
+        }
     }
 
 
     Indicator.prototype = {
         constructor: radialIndicator,
-        _init: function () {
+        _init: function() {
             var indOption = this.indOption,
                 canElm = this.canElm,
                 ctx = this.ctx,
@@ -165,7 +225,7 @@
             return this;
         },
         //draw background bar
-        _drawBarBg: function () {
+        _drawBarBg: function() {
             var indOption = this.indOption,
                 ctx = this.ctx,
                 dim = (indOption.radius + indOption.barWidth) * 2, //elm width and height
@@ -181,13 +241,13 @@
             }
         },
         //update the value of indicator without animation
-        value: function (val) {
+        value: function(val) {
             //return the val if val is not provided
             if (val === undefined || isNaN(val)) {
                 return this.current_value;
             }
 
-            val = parseInt(val);
+            val = parseFloat(val);
 
             var ctx = this.ctx,
                 indOption = this.indOption,
@@ -200,7 +260,9 @@
             //limit the val in range of minumum and maximum value
             val = val < minVal ? minVal : val > maxVal ? maxVal : val;
 
-            var perVal = Math.round(((val - minVal) * 100 / (maxVal - minVal)) * 100) / 100, //percentage value tp two decimal precision
+            var precision = indOption.precision != null ? indOption.precision : 0,
+                precisionNo = Math.pow(10, precision),
+                perVal = Math.round(((val - minVal) * precisionNo / (maxVal - minVal)) * 100) / precisionNo, //percentage value tp two decimal precision
                 dispVal = indOption.percentage ? perVal + '%' : this.formatter(val); //formatted value
 
             //save val on object
@@ -257,16 +319,16 @@
             return this;
         },
         //animate progressbar to the value
-        animate: function (val) {
-
-
-
+        animate: function(val) {
             var indOption = this.indOption,
                 counter = this.current_value || indOption.minValue,
                 self = this,
                 minVal = indOption.minValue,
                 maxVal = indOption.maxValue,
-                incBy = Math.ceil((maxVal - minVal) / (indOption.frameNum || (indOption.percentage ? 100 : 500))); //increment by .2% on every tick and 1% if showing as percentage
+                frameNum = indOption.frameNum || (indOption.percentage ? 100 : 500),
+                precision = indOption.precision != null ? indOption.precision : Math.ceil(Math.log(maxVal - minVal / frameNum)),
+                precisionNo = Math.pow(10, precision),
+                incBy = Math.round((maxVal - minVal) * precisionNo / frameNum) / precisionNo; //increment by .2% on every tick and 1% if showing as percentage
 
             //limit the val in range of minumum and maximum value
             val = val < minVal ? minVal : val > maxVal ? maxVal : val;
@@ -276,7 +338,7 @@
             //clear interval function if already started
             if (this.intvFunc) clearInterval(this.intvFunc);
 
-            this.intvFunc = setInterval(function () {
+            this.intvFunc = setInterval(function() {
 
                 if ((!back && counter >= val) || (back && counter <= val)) {
                     if (self.current_value == counter) {
@@ -291,14 +353,14 @@
                 self.value(counter); //dispaly the value
 
                 if (counter != val) {
-                    counter = counter + (back ? -incBy : incBy)
+                    counter = counter + (back ? -incBy : incBy);
                 }; //increment or decrement till counter does not reach  to value
             }, indOption.frameTime);
 
             return this;
         },
         //method to update options
-        option: function (key, val) {
+        option: function(key, val) {
             if (val === undefined) return this.option[key];
 
             if (['radius', 'barWidth', 'barBgColor', 'format', 'maxValue', 'percentage'].indexOf(key) != -1) {
@@ -332,19 +394,21 @@
         fontSize: null, //define the font size of indicator number
         interpolate: true, //interpolate color between ranges
         percentage: false, //show percentage of value
+        precision: null, //default value for precision depend on difference between min and max divided by number of frames
         displayNumber: true, //display indicator number
         roundCorner: false, //have round corner in filled bar
         minValue: 0, //minimum value
         maxValue: 100, //maximum value
-        initValue: 0 //define initial value of indicator
+        initValue: 0, //define initial value of indicator,
+        interaction: false //if true it allows to change radial indicator value using mouse or touch interaction
     };
 
     window.radialIndicator = radialIndicator;
 
     //add as a jquery plugin
     if ($) {
-        $.fn.radialIndicator = function (options) {
-            return this.each(function () {
+        $.fn.radialIndicator = function(options) {
+            return this.each(function() {
                 var newPCObj = radialIndicator(this, options);
                 $.data(this, 'radialIndicator', newPCObj);
             });
