@@ -1,5 +1,5 @@
 /*
-    radialIndicator.js v 1.2.0
+    radialIndicator.js v 1.2.1
     Author: Sudhanshu Yadav
     Copyright (c) 2015 Sudhanshu Yadav - ignitersworld.com , released under the MIT license.
     Demo on: ignitersworld.com/lab/radialIndicator.html
@@ -316,6 +316,9 @@
                 ctx.fillText(dispVal, center, center);
             }
 
+            //call onChange callback
+            indOption.onChange.call(this.container,val);
+
             return this;
         },
         //animate progressbar to the value
@@ -400,7 +403,8 @@
         minValue: 0, //minimum value
         maxValue: 100, //maximum value
         initValue: 0, //define initial value of indicator,
-        interaction: false //if true it allows to change radial indicator value using mouse or touch interaction
+        interaction: false, //if true it allows to change radial indicator value using mouse or touch interaction
+        onChange: function() {}
     };
 
     window.radialIndicator = radialIndicator;
