@@ -1,18 +1,39 @@
 /*
-    radialIndicator.js v 1.2.1
+    radialIndicator.js v 1.3.0
     Author: Sudhanshu Yadav
-    Copyright (c) 2015 Sudhanshu Yadav - ignitersworld.com , released under the MIT license.
+    Copyright (c) 2015,2016 Sudhanshu Yadav - ignitersworld.com , released under the MIT license.
     Demo on: ignitersworld.com/lab/radialIndicator.html
 */
+;(function (factory) {
+    /** support UMD ***/
+    var global = Function('return this')() || (42, eval)('this');
+    if (typeof define === "function" && define.amd) {
+        define(["jquery"], function ($) {
+            return (global.radialIndicator = factory($, global));
+        });
+    } else if (typeof module === "object" && module.exports) {
+        module.exports = global.document ?
+            factory(require("jquery"), global) :
+            function (w) {
+                if (!w.document) {
+                    throw new Error("radialIndiactor requires a window with a document");
+                }
+                return factory(require("jquery")(w), w);
+            };
+    } else {
+        global.radialIndicator = factory(global.jQuery, global);
+    }
+}(function ($, window, undefined) {
 
-;(function($, window, document) {
+    var document = window.document;
+
     "use strict";
     //circumfence and quart value to start bar from top
     var circ = Math.PI * 2,
         quart = Math.PI / 2;
 
 
-    //function to smooth canvas drawing for ratina devices 
+    //function to smooth canvas drawing for ratina devices
 
     //method to manage device pixel ratio in ratina devices
     var smoothCanvas = (function() {
@@ -54,7 +75,7 @@
     }
 
 
-    //function to get current color in case of 
+    //function to get current color in case of
     function getCurrentColor(curPer, bottomVal, topVal, bottomColor, topColor) {
         var rgbAryTop = topColor.indexOf('#') != -1 ? hexToRgb(topColor) : topColor.match(/\d+/g),
             rgbAryBottom = bottomColor.indexOf('#') != -1 ? hexToRgb(bottomColor) : bottomColor.match(/\d+/g),
@@ -135,7 +156,7 @@
 
         this.ctx = canElm.getContext('2d'); //get 2d canvas context
 
-        //add intial value 
+        //add intial value
         this.current_value = indOption.initValue || indOption.minValue || 0;
 
 
@@ -419,4 +440,6 @@
         };
     }
 
-}(window.jQuery, window, document, void 0));
+    return radialIndicator;
+
+}));
