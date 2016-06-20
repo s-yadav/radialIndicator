@@ -333,7 +333,7 @@
                 ctx.fillStyle = indOption.fontColor || curColor;
                 ctx.font = weight + " " + fontSize + "px " + cFont;
                 ctx.textAlign = "center";
-                ctx.textBaseline = 'middle';
+                ctx.textBaseline = indOption.textBaseline;
                 ctx.fillText(dispVal, center, center);
             }
 
@@ -416,6 +416,7 @@
         fontFamily: null, //defines font family
         fontWeight: 'bold', //defines font weight
         fontSize: null, //define the font size of indicator number
+        textBaseline: 'middle', //define the text base line of indicator number
         interpolate: true, //interpolate color between ranges
         percentage: false, //show percentage of value
         precision: null, //default value for precision depend on difference between min and max divided by number of frames
