@@ -263,6 +263,9 @@
         },
         //update the value of indicator without animation
         value: function(val) {
+            // console.log('val');
+            // console.log(val);
+
             //return the val if val is not provided
             if (val === undefined || isNaN(val)) {
                 return this.current_value;
@@ -352,7 +355,7 @@
                 frameNum = indOption.frameNum || (indOption.percentage ? 100 : 500),
                 precision = indOption.precision != null ? indOption.precision : Math.ceil(Math.log(maxVal - minVal / frameNum)),
                 precisionNo = Math.pow(10, precision),
-                incBy = Math.round((maxVal - minVal) * precisionNo / frameNum) / precisionNo; //increment by .2% on every tick and 1% if showing as percentage
+                incBy = (maxVal - minVal) / frameNum ; //increment by .2% on every tick and 1% if showing as percentage
 
             //limit the val in range of minumum and maximum value
             val = val < minVal ? minVal : val > maxVal ? maxVal : val;
@@ -377,8 +380,8 @@
                 self.value(counter); //dispaly the value
 
                 if (counter != val) {
-                    counter = counter + (back ? -incBy : incBy);
-                }; //increment or decrement till counter does not reach  to value
+                    counter = Math.round((counter + (back ? -incBy : incBy)) * precisionNo) / precisionNo;
+                } //increment or decrement till counter does not reach  to value
             }, indOption.frameTime);
 
             return this;
