@@ -263,7 +263,6 @@
         },
         //update the value of indicator without animation
         value: function(val) {
-
             //return the val if val is not provided
             if (val === undefined || isNaN(val)) {
                 return this.current_value;
