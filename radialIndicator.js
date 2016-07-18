@@ -74,6 +74,9 @@
         return Math.round(bottomRange + ((topRange - bottomRange) * curShift / perShift));
     }
 
+    function isNumeric(n) {
+        return !isNaN(parseFloat(n)) && isFinite(n);
+    }
 
     //function to get current color in case of
     function getCurrentColor(curPer, bottomVal, topVal, bottomColor, topColor) {
@@ -157,7 +160,7 @@
         this.ctx = canElm.getContext('2d'); //get 2d canvas context
 
         //add intial value
-        this.current_value = indOption.initValue || indOption.minValue || 0;
+        this.current_valuePair = [0,indOption.initValue || indOption.minValue || 0];
 
 
         //handeling user interaction
@@ -211,7 +214,7 @@
                 precision = indOption.precision != null ? indOption.precision : 0,
                 precisionNo = Math.pow(10, precision),
                 diff = indOption.maxValue - indOption.minValue,
-                val = self.current_value + Math.round(precisionNo * delta * diff / Math.min(diff, 100)) / precisionNo;
+                val = self.current_valuePair[1] + Math.round(precisionNo * delta * diff / Math.min(diff, 100)) / precisionNo;
 
             self.value(val);
 
@@ -241,7 +244,7 @@
             this._drawBarBg();
 
             //put the initial value if defined
-            this.value(this.current_value);
+            this.value(this.current_valuePair);
 
             return this;
         },
@@ -262,13 +265,19 @@
             }
         },
         //update the value of indicator without animation
-        value: function(val) {
-            //return the val if val is not provided
-            if (val === undefined || isNaN(val)) {
-                return this.current_value;
+        // valPair is [start,end] Array, or end Numeric
+        value: function(valPair) {
+
+            // previous API was to call with only the end value, this will keep the the range feature backwards compatible 
+            if (isNumeric(valPair)){
+                this.value([0,valPair]);
+                return;
             }
 
-            val = parseFloat(val);
+            //return the end val if valPair is not provided
+            if (valPair === undefined || (!Array.isArray(valPair) && isNaN(valPair))) {
+                return this.current_valuePair[1];
+            }
 
             var ctx = this.ctx,
                 indOption = this.indOption,
@@ -278,17 +287,35 @@
                 maxVal = indOption.maxValue,
                 center = dim / 2;
 
-            //limit the val in range of minumum and maximum value
-            val = val < minVal ? minVal : val > maxVal ? maxVal : val;
+            var precision = indOption.precision != null ? indOption.precision : 0;
+            var precisionNo = Math.pow(10, precision);
 
-            var precision = indOption.precision != null ? indOption.precision : 0,
-                precisionNo = Math.pow(10, precision),
-                perVal = Math.round(((val - minVal) * precisionNo / (maxVal - minVal)) * 100) / precisionNo, //percentage value tp two decimal precision
-                dispVal = indOption.percentage ? perVal + '%' : this.formatter(val); //formatted value
+            var perValPair =[];
+            var dispValPair = [];
 
-            //save val on object
-            this.current_value = val;
+            var endValue; // TODO: this variable is a patch... ideally should be removed
 
+            valPair.forEach(function(val,i){
+
+                val = parseFloat(val);
+
+                //limit the val in range of minumum and maximum value
+                val = val < minVal ? minVal : val > maxVal ? maxVal : val;
+
+                //percentage value tp two decimal precision
+                perValPair.push(Math.round(((val - minVal) * precisionNo / (maxVal - minVal)) * 100) / precisionNo);
+
+                //formatted value
+                var formattedVal = this.formatter(val);
+                dispValPair.push(indOption.percentage ? perVal + '%' : formattedVal);
+
+                //save val on object
+                this.current_valuePair[i] = val;
+
+                if(i===1){
+                    endValue = val;
+                }
+            },this);
 
             //draw the bg circle
             ctx.clearRect(0, 0, dim, dim);
@@ -303,7 +330,7 @@
                         topVal = range[i],
                         bottomColor = curColor[bottomVal],
                         topColor = curColor[topVal],
-                        newColor = val == bottomVal ? bottomColor : val == topVal ? topColor : val > bottomVal && val < topVal ? indOption.interpolate ? getCurrentColor(val, bottomVal, topVal, bottomColor, topColor) : topColor : false;
+                        newColor = endValue == bottomVal ? bottomColor : endValue == topVal ? topColor : endValue > bottomVal && endValue < topVal ? indOption.interpolate ? getCurrentColor(endValue, bottomVal, topVal, bottomColor, topColor) : topColor : false;
 
                     if (newColor != false) {
                         curColor = newColor;
@@ -319,7 +346,7 @@
             if (indOption.roundCorner) ctx.lineCap = "round";
 
             ctx.beginPath();
-            ctx.arc(center, center, indOption.radius - 1 + indOption.barWidth / 2, -(quart), ((circ) * perVal / 100) - quart, false);
+            ctx.arc(center, center, indOption.radius - 1 + indOption.barWidth / 2, ((circ) * perValPair[0] / 100) - quart, ((circ) * perValPair[1] / 100) - quart, false);
             ctx.stroke();
 
             //add percentage text
@@ -334,18 +361,26 @@
                 ctx.font = weight + " " + fontSize + "px " + cFont;
                 ctx.textAlign = "center";
                 ctx.textBaseline = indOption.textBaseline;
-                ctx.fillText(dispVal, center, center);
+                ctx.fillText(dispValPair [1], center, center);
             }
 
             //call onChange callback
-            indOption.onChange.call(this.container,val);
+            indOption.onChange.call(this.container,endValue);
+
 
             return this;
         },
         //animate progressbar to the value
-        animate: function(val) {
+        animate: function(valPair) {
+
+            // previous API was to call with only the end value, this will keep the new range feature backwards compatible 
+            if (isNumeric(valPair)){
+                this.animate([0,valPair]);
+                return;
+            }
+
             var indOption = this.indOption,
-                counter = this.current_value || indOption.minValue,
+                counterPair = this.current_valuePair || [indOption.minValue,indOption.minValue],
                 self = this,
                 minVal = indOption.minValue,
                 maxVal = indOption.maxValue,
@@ -354,31 +389,40 @@
                 precisionNo = Math.pow(10, precision),
                 incBy = Math.round((maxVal - minVal) * precisionNo / frameNum) / precisionNo; //increment by .2% on every tick and 1% if showing as percentage
 
-            //limit the val in range of minumum and maximum value
-            val = val < minVal ? minVal : val > maxVal ? maxVal : val;
-
-            var back = val < counter;
 
             //clear interval function if already started
             if (this.intvFunc) clearInterval(this.intvFunc);
 
+            var backPair = [valPair[0] < counterPair[0], valPair[1] < counterPair[1]];
+
             this.intvFunc = setInterval(function() {
 
-                if ((!back && counter >= val) || (back && counter <= val)) {
-                    if (self.current_value == counter) {
-                        clearInterval(self.intvFunc);
-                        if (indOption.onAnimationComplete) indOption.onAnimationComplete(self.current_value);
-                        return;
-                    } else {
-                        counter = val;
+                valPair.forEach(function(val,i){
+
+                    //limit the val in range of minumum and maximum value
+                    val = val < minVal ? minVal : val > maxVal ? maxVal : val;
+
+                    // if counter passed over the value, then correct it
+                    if ((!backPair[i] && counterPair[i] >= val) || (backPair[i] && counterPair[i] <= val)) {
+                            counterPair[i] = val;
                     }
-                }
 
-                self.value(counter); //dispaly the value
+                    if (counterPair[i] !== val) {
+                        counterPair[i] = counterPair[i] + (backPair[i] ? -incBy : incBy);
+                    } //increment or decrement till counter does not reach  to value
 
-                if (counter != val) {
-                    counter = counter + (back ? -incBy : incBy);
-                }; //increment or decrement till counter does not reach  to value
+                });
+
+                self.value(counterPair); //dispaly the value
+
+                // stop if both(!) start and end reached their destination
+                if (self.current_valuePair[0] === valPair[0] &&  self.current_valuePair[1] === valPair[1]) {
+                    clearInterval(self.intvFunc);
+                    if (indOption.onAnimationComplete) indOption.onAnimationComplete(self.current_valuePair[1]);
+                    return;
+                } 
+
+
             }, indOption.frameTime);
 
             return this;
@@ -389,7 +433,7 @@
 
             if (['radius', 'barWidth', 'barBgColor', 'format', 'maxValue', 'percentage'].indexOf(key) != -1) {
                 this.indOption[key] = val;
-                this._init().value(this.current_value);
+                this._init().value(this.current_valuePair);
             }
             this.indOption[key] = val;
         }

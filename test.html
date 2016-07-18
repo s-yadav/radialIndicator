@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <title></title>
+
+        <script src="radialIndicator.js"></script>
+
+    </head>
+    <body>
+        <div id="indicatorContainer">
+
+        </div>
+
+        <script>
+
+//Intialiazation 
+var radialObj = radialIndicator('#indicatorContainer', {
+
+    frameTime : 1,
+    barColor : '#87CEEB',
+    barWidth : 10,
+    displayNumber : false
+
+}); 
+
+
+// new api
+radialObj.value([50,70]);  
+radialObj.animate([10,95]); 
+
+// old api still works
+/*
+radialObj.value(5);  
+radialObj.animate(60); 
+*/
+
+        </script>
+
+    </body>
+</html>
