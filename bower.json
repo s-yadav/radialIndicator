@@ -24,6 +24,9 @@
         "radial-indicator",
         "circular-progressbar"
     ],
+    "dependencies": {
+    "angular": "1.3.20"
+    },
     "readmeFilename": "README.md",
     "demo": "http://ignitersworld.com/lab/radialIndicator.html#example",
     "docs": "http://ignitersworld.com/lab/radialIndicator.html#documentation",
