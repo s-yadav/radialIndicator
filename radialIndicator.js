@@ -415,6 +415,7 @@
 
     //radial indicator defaults
     radialIndicator.defaults = {
+        reverse: false,
         radius: 50, //inner radius of indicator
         barWidth: 5, //bar width
         barBgColor: '#eeeeee', //unfilled bar color
