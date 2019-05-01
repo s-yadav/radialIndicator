@@ -1,0 +1,9 @@
+{
+  "name": "radialindicator",
+  "version": "1.4.0",
+  "description": "A simple and light weight circular indicator / progressbar plugin.",
+  "main": "radialIndicator.js",
+  "repository": "https://github.com/s-yadav/radialIndicator.git",
+  "author": "s-yadav <sudhanshuyadav2@gmail.com>",
+  "license": "MIT"
+}
