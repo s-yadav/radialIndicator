@@ -1,5 +1,6 @@
 {
-  "name": "radialindicator",
+  "name": "@sudhanshu/radial-indicator",
+  "private": false,
   "version": "1.4.0",
   "description": "A simple and light weight circular indicator / progressbar plugin.",
   "main": "radialIndicator.js",
