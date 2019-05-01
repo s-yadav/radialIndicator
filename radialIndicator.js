@@ -319,7 +319,17 @@
             if (indOption.roundCorner) ctx.lineCap = "round";
 
             ctx.beginPath();
-            ctx.arc(center, center, indOption.radius - 1 + indOption.barWidth / 2, -(quart), ((circ) * perVal / 100) - quart, false);
+            var start, end
+            if (indOption.reverse) {
+                start = circ * ((100 - perVal) / 100) - quart
+                // Start and end can't be equal or nothing is rendered
+                // so shave of a tiny amount of the end
+                end = (-quart) - 0.00001
+            } else {
+                start = -(quart)
+                end = ((circ) * perVal / 100) - quart
+            }
+            ctx.arc(center, center, indOption.radius - 1 + indOption.barWidth / 2, start, end, false);
             ctx.stroke();
 
             //add percentage text
@@ -405,6 +415,7 @@
 
     //radial indicator defaults
     radialIndicator.defaults = {
+        reverse: false,
         radius: 50, //inner radius of indicator
         barWidth: 5, //bar width
         barBgColor: '#eeeeee', //unfilled bar color
