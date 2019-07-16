@@ -11,6 +11,14 @@ npm install @sudhanshu/radial-indicator
 
 <h3>Major updates</h3>
 
+<strong>1.5.0</strong>
+- Added option to specify an easing function
+    - default linear (t = progress): function(t) {return t}
+    - example: https://gist.github.com/gre/1650294
+    - example: new BezierEasing(x,x,x,x) https://www.npmjs.com/package/bezier-easing
+- Added option to specify animation duration
+- Changed setInterval to requestAnimationFrame
+
 <strong>1.4.0</strong>
 - Added option to support rendering in the opposite direction.
 

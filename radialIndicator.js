@@ -23,6 +23,11 @@
     } else {
         global.radialIndicator = factory(global.jQuery, global);
     }
+
+    Number.prototype.countDecimals = function () {
+        if(Math.floor(this.valueOf()) === this.valueOf()) return 0;
+        return this.toString().split(".")[1].length || 0;
+    }
 }(function ($, window, undefined) {
 
     var document = window.document;
@@ -281,21 +286,24 @@
             //limit the val in range of minumum and maximum value
             val = val < minVal ? minVal : val > maxVal ? maxVal : val;
 
-            var precision = indOption.precision != null ? indOption.precision : 0,
+            var frameNum = indOption.frameNum || (indOption.percentage ? 100 : 500),
+                legacyDecimals = (maxVal - minVal / frameNum).countDecimals(), // precision default legacy support
+                valDecimals = val.countDecimals(), // precision default legacy support
+                precision = indOption.precision != null ? indOption.precision : valDecimals === 0 ? 0 : legacyDecimals, // precision default legacy support
                 precisionNo = Math.pow(10, precision),
-                perVal = Math.round(((val - minVal) * precisionNo / (maxVal - minVal)) * 100) / precisionNo, //percentage value tp two decimal precision
-                dispVal = indOption.percentage ? perVal + '%' : this.formatter(val); //formatted value
+                perVal = (((val - minVal) * precisionNo / (maxVal - minVal)) * 100) / precisionNo, //percentage value tp two decimal precision
+                dispVal = indOption.percentage ? Math.round(perVal) + '%' : this.formatter(val.toFixed(precision)); //formatted value
+
 
             //save val on object
             this.current_value = val;
-
 
             //draw the bg circle
             ctx.clearRect(0, 0, dim, dim);
             this._drawBarBg();
 
             //get current color if color range is set
-            if (typeof curColor == "object") {
+            if (typeof curColor === "object") {
                 var range = Object.keys(curColor);
 
                 for (var i = 1, ln = range.length; i < ln; i++) {
@@ -303,7 +311,16 @@
                         topVal = range[i],
                         bottomColor = curColor[bottomVal],
                         topColor = curColor[topVal],
-                        newColor = val == bottomVal ? bottomColor : val == topVal ? topColor : val > bottomVal && val < topVal ? indOption.interpolate ? getCurrentColor(val, bottomVal, topVal, bottomColor, topColor) : topColor : false;
+                        newColor =
+                            val == bottomVal
+                                ? bottomColor
+                                : val == topVal
+                                ? topColor
+                                : val > bottomVal && val < topVal
+                                    ? indOption.interpolate
+                                        ? getCurrentColor(val, bottomVal, topVal, bottomColor, topColor)
+                                        : topColor
+                                    : false;
 
                     if (newColor != false) {
                         curColor = newColor;
@@ -319,15 +336,15 @@
             if (indOption.roundCorner) ctx.lineCap = "round";
 
             ctx.beginPath();
-            var start, end
+            var start, end;
             if (indOption.reverse) {
-                start = circ * ((100 - perVal) / 100) - quart
+                start = circ * ((100 - perVal) / 100) - quart;
                 // Start and end can't be equal or nothing is rendered
                 // so shave of a tiny amount of the end
-                end = (-quart) - 0.00001
+                end = -quart - 0.00001;
             } else {
-                start = -(quart)
-                end = ((circ) * perVal / 100) - quart
+                start = -quart;
+                end = (circ * perVal) / 100 - quart;
             }
             ctx.arc(center, center, indOption.radius - 1 + indOption.barWidth / 2, start, end, false);
             ctx.stroke();
@@ -336,7 +353,8 @@
             if (indOption.displayNumber) {
                 var cFont = ctx.font.split(' '),
                     weight = indOption.fontWeight,
-                    fontSize = indOption.fontSize || (dim / (this.maxLength - (Math.floor(this.maxLength * 1.4 / 4) - 1)));
+                    fontSize =
+                        indOption.fontSize || dim / (this.maxLength - (Math.floor((this.maxLength * 1.4) / 4) - 1));
 
                 cFont = indOption.fontFamily || cFont[cFont.length - 1];
 
@@ -348,7 +366,7 @@
             }
 
             //call onChange callback
-            indOption.onChange.call(this.container,val);
+            indOption.onChange.call(this.container, val);
 
             return this;
         },
@@ -356,40 +374,41 @@
         animate: function(val) {
             var indOption = this.indOption,
                 counter = this.current_value || indOption.minValue,
+                startingPoint = this.current_value,
                 self = this,
                 minVal = indOption.minValue,
                 maxVal = indOption.maxValue,
-                frameNum = indOption.frameNum || (indOption.percentage ? 100 : 500),
-                precision = indOption.precision != null ? indOption.precision : Math.ceil(Math.log(maxVal - minVal / frameNum)),
-                precisionNo = Math.pow(10, precision),
-                incBy = (maxVal - minVal) / frameNum ; //increment by .2% on every tick and 1% if showing as percentage
+                frameNum = indOption.frameNum || (indOption.percentage ? 100 : 500);
 
             //limit the val in range of minumum and maximum value
             val = val < minVal ? minVal : val > maxVal ? maxVal : val;
 
             var back = val < counter;
 
-            //clear interval function if already started
-            if (this.intvFunc) clearInterval(this.intvFunc);
+            const valDelta = Math.abs(this.current_value - val);
 
-            this.intvFunc = setInterval(function() {
+            let start;
 
-                if ((!back && counter >= val) || (back && counter <= val)) {
-                    if (self.current_value == counter) {
-                        clearInterval(self.intvFunc);
-                        if (indOption.onAnimationComplete) indOption.onAnimationComplete(self.current_value);
-                        return;
-                    } else {
-                        counter = val;
-                    }
+            let duration = indOption.duration || indOption.frameTime * frameNum; //frameTime legacysupport
+
+            let processAnimation = now => {
+                if(!start) start = now;
+                const runtime = now - start;
+                const progress = runtime / duration;
+                const step = valDelta * indOption.easing(progress);
+                counter = back ? startingPoint - step : startingPoint + step;
+                this.value(counter); //display the value
+                if (runtime >= duration) {
+                    this.value(val);
+                    cancelAnimationFrame(processAnimation);
+                    if (indOption.onAnimationComplete) indOption.onAnimationComplete(self.current_value);
+                    return;
+                } else {
+                    // if duration not met yet
+                    requestAnimationFrame(processAnimation);
                 }
-
-                self.value(counter); //dispaly the value
-
-                if (counter != val) {
-                    counter = Math.round((counter + (back ? -incBy : incBy)) * precisionNo) / precisionNo;
-                } //increment or decrement till counter does not reach  to value
-            }, indOption.frameTime);
+            };
+            requestAnimationFrame(processAnimation);
 
             return this;
         },
@@ -421,8 +440,8 @@
         barBgColor: '#eeeeee', //unfilled bar color
         barColor: '#99CC33', //filled bar color , can be a range also having different colors on different value like {0 : "#ccc", 50 : '#333', 100: '#000'}
         format: null, //format indicator numbers, can be a # formator ex (##,###.##) or a function
-        frameTime: 10, //miliseconds to move from one frame to another
-        frameNum: null, //Defines numbers of frame in indicator, defaults to 100 when showing percentage and 500 for other values
+        frameTime: 10, //@deprecated miliseconds to move from one frame to another
+        frameNum: null, //@deprecated Defines numbers of frame in indicator, defaults to 100 when showing percentage and 500 for other values
         fontColor: null, //font color
         fontFamily: null, //defines font family
         fontWeight: 'bold', //defines font weight
@@ -437,6 +456,7 @@
         maxValue: 100, //maximum value
         initValue: 0, //define initial value of indicator,
         interaction: false, //if true it allows to change radial indicator value using mouse or touch interaction
+        easing: function(y) {return y}, // default linear, y = progress will be passed to any function, should return updated progress
         onChange: function() {}
     };
 
