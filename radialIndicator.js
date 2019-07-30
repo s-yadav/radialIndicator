@@ -286,14 +286,9 @@
             //limit the val in range of minumum and maximum value
             val = val < minVal ? minVal : val > maxVal ? maxVal : val;
 
-            var frameNum = indOption.frameNum || (indOption.percentage ? 100 : 500),
-                legacyDecimals = (maxVal - minVal / frameNum).countDecimals(), // precision default legacy support
-                valDecimals = val.countDecimals(), // precision default legacy support
-                precision = indOption.precision != null ? indOption.precision : valDecimals === 0 ? 0 : legacyDecimals, // precision default legacy support
-                precisionNo = Math.pow(10, precision),
-                perVal = (((val - minVal) * precisionNo / (maxVal - minVal)) * 100) / precisionNo, //percentage value tp two decimal precision
-                dispVal = indOption.percentage ? Math.round(perVal) + '%' : this.formatter(val.toFixed(precision)); //formatted value
-
+            var precision = indOption.precision != null ? indOption.precision : 0,
+                perVal = Math.round(val),
+                dispVal = indOption.percentage ?  perVal + '%' : this.formatter(val.toFixed(precision)); //formatted value
 
             //save val on object
             this.current_value = val;
@@ -379,6 +374,7 @@
                 minVal = indOption.minValue,
                 maxVal = indOption.maxValue,
                 frameNum = indOption.frameNum || (indOption.percentage ? 100 : 500);
+
 
             //limit the val in range of minumum and maximum value
             val = val < minVal ? minVal : val > maxVal ? maxVal : val;
