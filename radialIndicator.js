@@ -23,11 +23,6 @@
     } else {
         global.radialIndicator = factory(global.jQuery, global);
     }
-
-    Number.prototype.countDecimals = function () {
-        if(Math.floor(this.valueOf()) === this.valueOf()) return 0;
-        return this.toString().split(".")[1].length || 0;
-    }
 }(function ($, window, undefined) {
 
     var document = window.document;
@@ -110,27 +105,41 @@
     //function to apply formatting on number depending on parameter
     function formatter(pattern) {
         return function(num) {
-            if (!pattern) return num.toString();
-            num = num || 0
-            var numRev = num.toString().split('').reverse(),
-                output = pattern.split("").reverse(),
-                i = 0,
-                lastHashReplaced = 0;
+            if (!pattern || pattern.length == 0) return num.toString();
+            var patternSplit =  pattern.split("."),
+                patternDecimals = patternSplit.length > 1 ? patternSplit[1].split('').filter(p => p === '#').length : 0,
+                num = num || 0;
 
-            //changes hash with numbers
-            for (var ln = output.length; i < ln; i++) {
-                if (!numRev.length) break;
-                if (output[i] == "#") {
-                    lastHashReplaced = i;
-                    output[i] = numRev.shift();
-                }
+            if (pattern.includes(".")) {
+                num          = parseFloat(num).toFixed(patternDecimals);
+                let numSplit = num.toString().split(".");
+                return `${replaceHashes(patternSplit[0], parseFloat(numSplit[0]).toFixed(0))}.${replaceHashes(patternSplit[1], numSplit[1])}`
             }
 
-            //add overflowing numbers before prefix
-            output.splice(lastHashReplaced + 1, output.lastIndexOf('#') - lastHashReplaced, numRev.reverse().join(""));
+            var output = replaceHashes(pattern, parseFloat(num).toFixed(0));
 
-            return output.reverse().join('');
+            return output;
         }
+    }
+
+    // helper function of formatter function
+    function replaceHashes(pattern, num) {
+        var numRev           = num.toString().split("").reverse(), // todo add negative support
+            output           = pattern.split("").reverse(),
+            i                = 0,
+            lastHashReplaced = 0;
+
+        //changes hash with numbers
+        for (var ln = output.length; i < ln; i++) {
+            if (!numRev.length) break;
+            if (output[i] == "#") {
+                lastHashReplaced = i;
+                output[i]        = numRev.shift();
+            }
+        }
+        //add overflowing numbers before prefix
+        output.splice(lastHashReplaced + 1, output.lastIndexOf('#') - lastHashReplaced, numRev.reverse().join(""));
+        return output.reverse().join('');
     }
 
 
@@ -287,8 +296,9 @@
             val = val < minVal ? minVal : val > maxVal ? maxVal : val;
 
             var precision = indOption.precision != null ? indOption.precision : 0,
-                perVal = Math.round(val),
-                dispVal = indOption.percentage ?  perVal + '%' : this.formatter(val.toFixed(precision)); //formatted value
+                precisionNo = Math.pow(10, precision),
+                perVal = (((val - minVal) * precisionNo / (maxVal - minVal)) * 100) / precisionNo, //percentage value tp two decimal precision
+                dispVal = indOption.percentage ?  Math.round(perVal) + '%' : this.formatter(val.toFixed(precision)); //formatted value
 
             //save val on object
             this.current_value = val;
@@ -306,16 +316,19 @@
                         topVal = range[i],
                         bottomColor = curColor[bottomVal],
                         topColor = curColor[topVal],
-                        newColor =
-                            val == bottomVal
-                                ? bottomColor
-                                : val == topVal
-                                ? topColor
-                                : val > bottomVal && val < topVal
-                                    ? indOption.interpolate
-                                        ? getCurrentColor(val, bottomVal, topVal, bottomColor, topColor)
-                                        : topColor
-                                    : false;
+                        newColor;
+
+                    if(val == bottomVal){
+                        newColor = bottomColor
+                    }else if (val == topVal) {
+                        newColor = topColor
+                    } else if (val > bottomVal && val < topVal) {
+                        newColor = indOption.interpolate
+                            ? getCurrentColor(val, bottomVal, topVal, bottomColor, topColor)
+                            : topColor;
+                    } else {
+                        newColor = false;
+                    }
 
                     if (newColor != false) {
                         curColor = newColor;
