@@ -379,9 +379,9 @@
             return this;
         },
         //animate progressbar to the value
-        animate: function(val) {
+        animate: function(val, animationDuration) {
             var indOption = this.indOption,
-                counter = this.current_value || indOption.minValue,
+                counter = this.current_value,
                 startingPoint = this.current_value,
                 self = this,
                 minVal = indOption.minValue,
@@ -394,20 +394,22 @@
 
             var back = val < counter;
 
-            const valDelta = Math.abs(this.current_value - val);
+            const valDelta = Math.abs(this.current_value - val),
+                minMaxDelta = Math.abs(maxVal - minVal),
+                valDeltaMultiplier = valDelta / minMaxDelta;
 
             let start;
 
-            let duration = indOption.duration || indOption.frameTime * frameNum; //frameTime legacysupport
+            let calcDuration = animationDuration || indOption.duration * valDeltaMultiplier || indOption.frameTime * frameNum * valDeltaMultiplier; //frameTime legacysupport
 
             let processAnimation = now => {
                 if(!start) start = now;
                 const runtime = now - start;
-                const progress = runtime / duration;
+                const progress = runtime / calcDuration;
                 const step = valDelta * indOption.easing(progress);
                 counter = back ? startingPoint - step : startingPoint + step;
                 this.value(counter); //display the value
-                if (runtime >= duration) {
+                if (runtime >= calcDuration) {
                     this.value(val);
                     cancelAnimationFrame(processAnimation);
                     if (indOption.onAnimationComplete) indOption.onAnimationComplete(self.current_value);
@@ -465,7 +467,7 @@
         maxValue: 100, //maximum value
         initValue: 0, //define initial value of indicator,
         interaction: false, //if true it allows to change radial indicator value using mouse or touch interaction
-        easing: function(y) {return y}, // default linear, y = progress will be passed to any function, should return updated progress
+        easing: (y) =>  {return y}, // default linear, y = progress will be passed to any function, should return updated progress
         onChange: function() {}
     };
 
