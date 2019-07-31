@@ -103,28 +103,28 @@
     }
 
     //function to apply formatting on number depending on parameter
-    function formatter(pattern) {
+    function formatter(pattern, precision) {
         return function(num) {
-            if (!pattern || pattern.length == 0) return num.toString();
-            var patternSplit =  pattern.split("."),
-                patternDecimals = patternSplit.length > 1 ? patternSplit[1].split('').filter(p => p === '#').length : 0,
+            if (!pattern || pattern.length == 0) return num.toFixed(precision).toString();
+            var patternDigitsDecimals =  pattern.split("."),
+                patternDecimals = patternDigitsDecimals.length > 1 ? patternDigitsDecimals[1].split('').filter(p => p === '#').length : 0,
                 num = num || 0;
 
             if (pattern.includes(".")) {
                 num          = parseFloat(num).toFixed(patternDecimals);
                 let numSplit = num.toString().split(".");
-                return `${replaceHashes(patternSplit[0], parseFloat(numSplit[0]).toFixed(0))}.${replaceHashes(patternSplit[1], numSplit[1])}`
+                const digits         = replaceHashes(patternDigitsDecimals[0], parseFloat(numSplit[0]).toFixed(0));
+                const decimals = replaceHashes(patternDigitsDecimals[1], numSplit[1]);
+                return `${digits}.${decimals}`
             }
 
-            var output = replaceHashes(pattern, parseFloat(num).toFixed(0));
-
-            return output;
+            return  replaceHashes(pattern, parseFloat(num).toFixed(0));
         }
     }
 
     // helper function of formatter function
     function replaceHashes(pattern, num) {
-        var numRev           = num.toString().split("").reverse(), // todo add negative support
+        var numRev           = num.toString().split('@"^\d$').reverse(),
             output           = pattern.split("").reverse(),
             i                = 0,
             lastHashReplaced = 0;
@@ -298,7 +298,7 @@
             var precision = indOption.precision != null ? indOption.precision : 0,
                 precisionNo = Math.pow(10, precision),
                 perVal = (((val - minVal) * precisionNo / (maxVal - minVal)) * 100) / precisionNo, //percentage value tp two decimal precision
-                dispVal = indOption.percentage ?  Math.round(perVal) + '%' : this.formatter(val.toFixed(precision)); //formatted value
+                dispVal = indOption.percentage ?  Math.round(perVal) + '%' : this.formatter(val, precision); //formatted value
 
             //save val on object
             this.current_value = val;
