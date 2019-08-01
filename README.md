@@ -11,7 +11,7 @@ npm install @sudhanshu/radial-indicator
 
 ###Major updates
 
-<h5>1.5.0</h5>
+<h5>2.0.0</h5>
 - Added option to specify an easing function
     - default is linear: 
     ```
@@ -48,19 +48,17 @@ the duration from your minValue to maxValue. If you did not set those values def
 - Fixed: Using decimal value in indicator #25
 
 <h5>Release Notes</h5>
-- Be careful when you update to 1.5.0, this is what changed:
-    - Since we use requestAnimationFrame() instead of setInterval() there are
-    most likely, but depending on your setup, more iterations than before. Causing 
-    a smoother animation. Before this release if no precision property was set, default
-    was depending on the step after each iteration. This is no longer the case since we have
-    smaller steps with more decimal places. If you do not specify precision on the indicator,
-    default number of decimals is 0. If you want decimal places, you have to set the
-    precision property.
-    - When a format pattern is set, decimal places in the format will take precedence
-    over precision
-    - frameTime and frameNum properties on the indicator are now deprecated. Those fields
-    are only used when no duration property is set and will be removed in a future release.
-
+- Since setInterval() was replaced with requestAnimationFrame() there are
+most likely, but depending on your setup, more iterations than before. Causing 
+a smoother animation. Before this release if no precision property was set, default
+was depending on the step after each iteration. This is no longer the case since we have
+smaller steps with more decimal places. If you do not specify precision on the indicator,
+default number of decimals is 0. If you want decimal places, you have to set the
+precision property.
+- When a format pattern is set, decimal places in the format will take precedence
+over precision property
+- frameTime and frameNum properties on the indicator are now deprecated. Those fields
+are only used when no duration property is set and will be removed in a future release.
 
 <strong>1.4.0</strong>
 - Added option to support rendering in the opposite direction.
