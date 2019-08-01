@@ -124,7 +124,7 @@
 
     // helper function of formatter function
     function replaceHashes(pattern, num) {
-        var numRev           = num.toString().split('@"^\d$').reverse(),
+        var numRev           = num.toString().split(new RegExp('(-?[0-9])', "g")).filter(d => d !== "").reverse(),
             output           = pattern.split("").reverse(),
             i                = 0,
             lastHashReplaced = 0;
@@ -451,6 +451,7 @@
         barBgColor: '#eeeeee', //unfilled bar color
         barColor: '#99CC33', //filled bar color , can be a range also having different colors on different value like {0 : "#ccc", 50 : '#333', 100: '#000'}
         format: null, //format indicator numbers, can be a # formator ex (##,###.##) or a function
+        duration : null, // duration in ms from minValue to maxValue
         frameTime: 10, //@deprecated miliseconds to move from one frame to another
         frameNum: null, //@deprecated Defines numbers of frame in indicator, defaults to 100 when showing percentage and 500 for other values
         fontColor: null, //font color
