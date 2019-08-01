@@ -298,7 +298,7 @@
             var precision = indOption.precision != null ? indOption.precision : 0,
                 precisionNo = Math.pow(10, precision),
                 perVal = (((val - minVal) * precisionNo / (maxVal - minVal)) * 100) / precisionNo, //percentage value tp two decimal precision
-                dispVal = indOption.percentage ?  Math.round(perVal) + '%' : this.formatter(val, precision); //formatted value
+                dispVal = indOption.percentage ?  perVal.toFixed(precision) + '%' : this.formatter(val, precision); //formatted value
 
             //save val on object
             this.current_value = val;
