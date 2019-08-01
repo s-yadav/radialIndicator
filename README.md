@@ -44,6 +44,8 @@ from current value to the target value. While the duration property on the indic
 the duration from your minValue to maxValue. If you did not set those values default is 0-100.
 - Replaced setInterval with requestAnimationFrame
 - Fixed: Formatter not handling decimal places correctly
+- Fixed: Animation issue when the minValue is negative #11
+- Fixed: Using decimal value in indicator #25
 
 <h5>Release Notes</h5>
 - Be careful when you update to 1.5.0, this is what changed:
