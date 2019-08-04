@@ -52,7 +52,7 @@
     }());
 
     // function to convert hex to rgb
-    function hexToRgb (hex) {
+    function hexToRgb(hex) {
         // Expand shorthand form (e.g. "03F") to full form (e.g. "0033FF")
         const shorthandRegex = /^#?([a-f\d])([a-f\d])([a-f\d])$/i;
         hex = hex.replace(shorthandRegex, function (m, r, g, b) {
@@ -63,12 +63,12 @@
         return result ? [parseInt(result[1], 16), parseInt(result[2], 16), parseInt(result[3], 16)] : null;
     }
 
-    function getPropVal (curShift, perShift, bottomRange, topRange) {
+    function getPropVal(curShift, perShift, bottomRange, topRange) {
         return Math.round(bottomRange + ((topRange - bottomRange) * curShift / perShift));
     }
 
     // function to get current color in case of
-    function getCurrentColor (curPer, bottomVal, topVal, bottomColor, topColor) {
+    function getCurrentColor(curPer, bottomVal, topVal, bottomColor, topColor) {
         const rgbAryTop = topColor.indexOf('#') !== -1 ? hexToRgb(topColor) : topColor.match(/\d+/g),
             rgbAryBottom = bottomColor.indexOf('#') !== -1 ? hexToRgb(bottomColor) : bottomColor.match(/\d+/g),
             perShift = topVal - bottomVal,
@@ -80,7 +80,7 @@
     }
 
     // to merge object
-    function merge () {
+    function merge() {
         const arg = arguments,
             target = arg[0];
         for (let i = 1, ln = arg.length; i < ln; i++) {
@@ -95,7 +95,7 @@
     }
 
     // function to apply formatting on number depending on parameter
-    function formatter (pattern, precision) {
+    function formatter(pattern, precision) {
         return function (num) {
             if (!pattern || pattern.length === 0) return num.toFixed(precision).toString();
             const patternDigitsDecimals = pattern.split('.'),
@@ -115,7 +115,7 @@
     }
 
     // helper function of formatter function
-    function replaceHashes (pattern, num) {
+    function replaceHashes(pattern, num) {
         const numRev = num.toString().split(new RegExp('(-?[0-9])', 'g')).filter(d => d !== '').reverse(),
             output = pattern.split('').reverse();
         let i = 0,
@@ -135,7 +135,7 @@
     }
 
     // circle bar class
-    function Indicator (container, indOption) {
+    function Indicator(container, indOption) {
         const self = this;
 
         indOption = indOption || {};
@@ -144,10 +144,14 @@
         this.indOption = indOption;
 
         // create a queryselector if a selector string is passed in container
-        if (typeof container === 'string') { container = document.querySelector(container); }
+        if (typeof container === 'string') {
+            container = document.querySelector(container);
+        }
 
         // get the first element if container is a node list
-        if (container.length) { container = container[0]; }
+        if (container.length) {
+            container = container[0];
+        }
 
         this.container = container;
 
@@ -203,7 +207,7 @@
         canElm.addEventListener('mousewheel', MouseWheelHandler, false);
         canElm.addEventListener('DOMMouseScroll', MouseWheelHandler, false);
 
-        function MouseWheelHandler (e) {
+        function MouseWheelHandler(e) {
             if (!indOption.interaction) return;
             e.preventDefault();
 
@@ -415,7 +419,7 @@
     };
 
     /** Initializer function **/
-    function radialIndicator (container, options) {
+    function radialIndicator(container, options) {
         const progObj = new Indicator(container, options);
         progObj._init();
         return progObj;
@@ -446,8 +450,11 @@
         maxValue: 100, // maximum value
         initValue: 0, // define initial value of indicator,
         interaction: false, // if true it allows to change radial indicator value using mouse or touch interaction
-        easing: (y) => { return y; }, // default linear, y = progress will be passed to any function, should return updated progress
-        onChange: function () {},
+        easing: (y) => {
+            return y;
+        }, // default linear, y = progress will be passed to any function, should return updated progress
+        onChange: function () {
+        },
     };
 
     window.radialIndicator = radialIndicator;
