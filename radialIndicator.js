@@ -94,13 +94,13 @@
         return target;
     }
 
-    //function to apply formatting on number depending on parameter
-    function formatter(pattern, precision) {
-        return function(num) {
-            if (!pattern || pattern.length == 0) return num.toFixed(precision).toString();
-            var patternDigitsDecimals =  pattern.split("."),
-                patternDecimals = patternDigitsDecimals.length > 1 ? patternDigitsDecimals[1].split('').filter(p => p === '#').length : 0,
-                num = num || 0;
+    // function to apply formatting on number depending on parameter
+    function formatter (pattern, precision) {
+        return function (num) {
+            if (!pattern || pattern.length === 0) return num.toFixed(precision).toString();
+            const patternDigitsDecimals = pattern.split('.'),
+                patternDecimals = patternDigitsDecimals.length > 1 ? patternDigitsDecimals[1].replace(/[^#]/g, '').length : 0;
+            let number = num || 0;
 
             if (pattern.includes('.')) {
                 number = parseFloat(number).toFixed(patternDecimals);
