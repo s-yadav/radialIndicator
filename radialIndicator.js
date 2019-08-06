@@ -6,20 +6,20 @@
 */
 ;(function (factory) {
   /** support UMD ***/
-    const global = Function('return this')() || (42, eval)('this'); // eslint-disable-line
-    if (typeof define === 'function' && define.amd) { // eslint-disable-line
-        define(['jquery'], function ($) { // eslint-disable-line
+  const global = Function('return this')() || (42, eval)('this'); // eslint-disable-line
+  if (typeof define === 'function' && define.amd) { // eslint-disable-line
+    define(['jquery'], function ($) { // eslint-disable-line
       return (global.radialIndicator = factory($, global));
     });
   } else if (typeof module === 'object' && module.exports) {
     module.exports = global.document
-      ? factory(require('jquery'), global)
-      : function (w) {
-        if (!w.document) {
-          throw new Error('radialIndiactor requires a window with a document');
-        }
-        return factory(require('jquery')(w), w);
-      };
+        ? factory(require('jquery'), global)
+        : function (w) {
+          if (!w.document) {
+            throw new Error('radialIndiactor requires a window with a document');
+          }
+          return factory(require('jquery')(w), w);
+        };
   } else {
     global.radialIndicator = factory(global.jQuery, global);
   }
@@ -33,10 +33,10 @@
     const ctx = document.createElement('canvas').getContext('2d');
     const dpr = window.devicePixelRatio || 1;
     const bsr = ctx.webkitBackingStorePixelRatio ||
-                ctx.mozBackingStorePixelRatio ||
-                ctx.msBackingStorePixelRatio ||
-                ctx.oBackingStorePixelRatio ||
-                ctx.backingStorePixelRatio || 1;
+        ctx.mozBackingStorePixelRatio ||
+        ctx.msBackingStorePixelRatio ||
+        ctx.oBackingStorePixelRatio ||
+        ctx.backingStorePixelRatio || 1;
 
     const ratio = dpr / bsr; // PIXEL RATIO
 
@@ -307,16 +307,18 @@
           const topColor = curColor[topVal];
           let newColor;
 
-          if (val === bottomVal) {
+          if (val.toString() === bottomVal) {
             newColor = bottomColor;
-          } else if (val === topVal) {
-            newColor = topColor;
-          } else if (val > bottomVal && val < topVal) {
-            newColor = indOption.interpolate
-              ? getCurrentColor(val, bottomVal, topVal, bottomColor, topColor)
-              : topColor;
           } else {
-            newColor = false;
+            if (val.toString() === topVal) {
+              newColor = topColor;
+            } else {
+              if (val > bottomVal && val < topVal) {
+                newColor = indOption.interpolate ? getCurrentColor(val, bottomVal, topVal, bottomColor, topColor) : topColor;
+              } else {
+                newColor = false;
+              }
+            }
           }
 
           if (newColor !== false) {
