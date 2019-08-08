@@ -3,22 +3,27 @@
   "private": false,
   "version": "1.4.0",
   "description": "A simple and light weight circular indicator / progressbar plugin.",
-  "main": "radialIndicator.js",
+  "main": "dist/radialIndicator.js",
   "repository": "https://github.com/s-yadav/radialIndicator.git",
   "author": "s-yadav <sudhanshuyadav2@gmail.com>",
   "license": "MIT",
   "scripts": {
-    "lint": "eslint ./radialIndicator.js --fix"
+    "lint": "eslint ./radialIndicator.js --fix",
+    "compile": "buble src/radialIndicator.js > dist/radialIndicator.js",
+    "uglify": "uglifyjs --compress --mangle  -o dist/radialIndicator.min.js -- dist/radialIndicator.js",
+    "bundle": "yarn compile && yarn uglify"
   },
   "devDependencies": {
-    "jest": "^24.8.0",
-    "eslint-plugin-jest": "^21.5.0",
     "babel-eslint": "^9.0.0",
+    "buble": "^0.19.8",
     "eslint": "^6.1.0",
     "eslint-config-standard": "^13.0.1",
     "eslint-plugin-import": "^2.18.2",
+    "eslint-plugin-jest": "^21.5.0",
     "eslint-plugin-node": "^9.1.0",
     "eslint-plugin-promise": "^4.2.1",
-    "eslint-plugin-standard": "^4.0.0"
+    "eslint-plugin-standard": "^4.0.0",
+    "jest": "^24.8.0",
+    "uglify-js": "^3.6.0"
   }
 }
