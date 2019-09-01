@@ -16,33 +16,8 @@ When updating the documentation, checkout the repository and follow this
 ###Major updates
 
 <h5>2.0.0</h5>
-- Added option to specify an easing function
-    - default is linear: 
-    ```
-    (t) => { return t } // t = progress
-    ```
-    - https://gist.github.com/gre/1650294
-    ```
-    const indicator = radialIndicator('#indicatorContainer', {
-            ...
-            easing: (t) => { return t*t } // easInQuad
-        });
-    
-    ```
-    - https://www.npmjs.com/package/bezier-easing
-    ```
-    const indicator = radialIndicator('#indicatorContainer', {
-        ...
-        easing: new BezierEasing(.14,1.39,.5,.04)
-    });
-    ```
-- Added option to specify animation duration
-    ```
-    const indicator = radialIndicator('#indicatorContainer', {
-        ...
-        duration: 2000 // in ms
-    });
-    ```
+- Added the option to specify an easing function
+- Added the option to specify an animation duration
 - animate(value, anmDuration) has now an optional second parameter to define a duration 
 from current value to the target value. While the duration property on the indicator is
 the duration from your minValue to maxValue. If you did not set those values default is 0-100.
