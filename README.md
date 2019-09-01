@@ -1,7 +1,7 @@
 # radialIndicator
-A simple and light weight circular indicator plugin. Also works on Internet Explorer (IE11).
+A simple and light weight circular indicator plugin. Also works on Internet Explorer.
+It supports duration, color range, interpolation, formatting, percentage value and much more. Does work well with jQuery and angularJS.
 
-Check demo and documentation on <a href="http://ignitersworld.com/lab/radialIndicator.html">http://ignitersworld.com/lab/radialIndicator.html</a>
 
 ### Installation
 Through npm
@@ -19,7 +19,7 @@ npm install @sudhanshu/radial-indicator
     ```
     - https://gist.github.com/gre/1650294
     ```
-    var indicator = radialIndicator('#indicatorContainer', {
+    const indicator = radialIndicator('#indicatorContainer', {
             ...
             easing: (t) => { return t*t } // easInQuad
         });
@@ -27,14 +27,14 @@ npm install @sudhanshu/radial-indicator
     ```
     - https://www.npmjs.com/package/bezier-easing
     ```
-    var indicator = radialIndicator('#indicatorContainer', {
+    const indicator = radialIndicator('#indicatorContainer', {
         ...
         easing: new BezierEasing(.14,1.39,.5,.04)
     });
     ```
 - Added option to specify animation duration
     ```
-    var indicator = radialIndicator('#indicatorContainer', {
+    const indicator = radialIndicator('#indicatorContainer', {
         ...
         duration: 2000 // in ms
     });
@@ -47,7 +47,7 @@ the duration from your minValue to maxValue. If you did not set those values def
 - Fixed: Animation issue when the minValue is negative #11
 - Fixed: Using decimal value in indicator #25
 
-<h5>Release Notes</h5>
+<h6>Release Notes</h6>
 - Since setInterval() was replaced with requestAnimationFrame() there are
 most likely, but depending on your setup, more iterations than before. Causing 
 a smoother animation. Before this release if no precision property was set, default
