@@ -4,12 +4,12 @@ input[type=number]::-webkit-outer-spin-button {
     margin: 0;
 }
 
-.container a:hover {
-    text-decoration: none;
+.container li {
+    list-style-type: disc;
 }
 
-.container ul {
-    list-style: none;
+.container a:hover {
+    text-decoration: none;
 }
 
 .container input {
@@ -26,9 +26,13 @@ input[type=number]::-webkit-outer-spin-button {
     margin-top: 1rem;
 }
 
-html, body, h1, h2, h3, h4, h5, h6 {
-    font-family: sans-serif;
-    margin-top: 1rem !important;
+.container html, .container body, .container h2,
+.container  h3, .container h4, .container h5, .container h6 {
+    margin-top: 1rem;
+}
+
+.container  h1 {
+    margin-top: 2rem;
 }
 
 .hljs {
