@@ -9,6 +9,10 @@ Through npm
 npm install @sudhanshu/radial-indicator
 ```
 
+### For Devs
+When updating the documentation, checkout the repository and follow this
+[this](https://kbroman.org/simple_site/pages/local_test.html) guide to test the site locally.
+
 ###Major updates
 
 <h5>2.0.0</h5>
