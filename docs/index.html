@@ -382,7 +382,7 @@ radialIndicator(".indicatorContainer", {
     initValue: 750000,
     minValue: 10000,
     maxValue: 10000000,
-    format: ##,###,###'
+    format: '##,###,###'
 });
             </code></pre>
         </div>
@@ -392,7 +392,7 @@ radialIndicator(".indicatorContainer", {
             <h3 id="image-content">Image or other content inside indicator</h3>
             <div id="indicatorWrapper">
                 <div id="indicatorImage"></div>
-                <img src="/assets/indicator_img_content.png" alt="indicator image"  id="prgLogo"/>
+                <img src="/assets/indicator_img_content.png" alt="indicator image" id="prgLogo"/>
             </div>
             <div class="actions">
                 <input class="input" type="number" value="0"/>
@@ -408,8 +408,8 @@ radialIndicator(".indicatorContainer", {
             <p>Then add the following css</p>
             <pre><code class="css">
 #indicatorContainerWrap, #indicatorContainer {
-    display:inline-block;
-    position:relative;
+    display: inline-block;
+    position: relative;
 }
 
 #prgLogo {
@@ -477,13 +477,13 @@ setInterval(() => {
     vertical-align: middle;
     text-align: center;
     width: 100%;
-    top:50%;
+    top: 50%;
     -webkit-transform: translateY(-50%);
     -moz-transform: translateY(-50%);
     -ms-transform: translateY(-50%);
     -o-transform: translateY(-50%);
     transform: translateY(-50%);
-    font-size:20px;
+    font-size: 20px;
     line-height: 24px;
 }
 
@@ -493,8 +493,8 @@ setInterval(() => {
     width: 100%;
     height: 100%;
     opacity: 0;
-    top:0;
-    left:0;
+    top: 0;
+    left: 0;
     z-index: 10;
 }
             </code></pre>
