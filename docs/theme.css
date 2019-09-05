@@ -26,13 +26,13 @@ input[type=number]::-webkit-outer-spin-button {
     margin-top: 1rem;
 }
 
-.container html, .container body, .container h2,
+.container html, .container body,
 .container  h3, .container h4, .container h5, .container h6 {
-    margin-top: 1rem;
+    margin-top: 2rem;
 }
 
-.container  h1 {
-    margin-top: 2rem;
+.container h2, .container  h1 {
+    margin-top: 3rem;
 }
 
 .hljs {
