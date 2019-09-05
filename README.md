@@ -1,7 +1,7 @@
 # radialIndicator
-A simple and light weight circular indicator plugin. Also works on Internet Explorer (IE11).
+A simple and light weight circular indicator plugin. Also works on Internet Explorer.
+It supports duration, color range, interpolation, formatting, percentage value and much more. Does work well with jQuery and angularJS.
 
-Check demo and documentation on <a href="http://ignitersworld.com/lab/radialIndicator.html">http://ignitersworld.com/lab/radialIndicator.html</a>
 
 ### Installation
 Through npm
@@ -9,36 +9,15 @@ Through npm
 npm install @sudhanshu/radial-indicator
 ```
 
+### For Devs
+When updating the documentation, checkout the repository and follow this
+[this](https://kbroman.org/simple_site/pages/local_test.html) guide to test the site locally.
+
 ###Major updates
 
 <h5>2.0.0</h5>
-- Added option to specify an easing function
-    - default is linear: 
-    ```
-    (t) => { return t } // t = progress
-    ```
-    - https://gist.github.com/gre/1650294
-    ```
-    var indicator = radialIndicator('#indicatorContainer', {
-            ...
-            easing: (t) => { return t*t } // easInQuad
-        });
-    
-    ```
-    - https://www.npmjs.com/package/bezier-easing
-    ```
-    var indicator = radialIndicator('#indicatorContainer', {
-        ...
-        easing: new BezierEasing(.14,1.39,.5,.04)
-    });
-    ```
-- Added option to specify animation duration
-    ```
-    var indicator = radialIndicator('#indicatorContainer', {
-        ...
-        duration: 2000 // in ms
-    });
-    ```
+- Added the option to specify an easing function
+- Added the option to specify an animation duration
 - animate(value, anmDuration) has now an optional second parameter to define a duration 
 from current value to the target value. While the duration property on the indicator is
 the duration from your minValue to maxValue. If you did not set those values default is 0-100.
@@ -47,7 +26,7 @@ the duration from your minValue to maxValue. If you did not set those values def
 - Fixed: Animation issue when the minValue is negative #11
 - Fixed: Using decimal value in indicator #25
 
-<h5>Release Notes</h5>
+<h6>Release Notes</h6>
 - Since setInterval() was replaced with requestAnimationFrame() there are
 most likely, but depending on your setup, more iterations than before. Causing 
 a smoother animation. Before this release if no precision property was set, default

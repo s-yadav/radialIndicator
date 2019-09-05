@@ -1,5 +1,643 @@
-<html>
-  <body>
-    <h1>Radial indicator example</h1>
-  </body>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>Radial Indicator</title>
+    <link rel="stylesheet" type="text/css" href="theme.css">
+    <link rel="stylesheet" type="text/css" href="/assets/highlights/styles/atom-one-dark.css">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
+    <script src="http://code.jquery.com/jquery-3.4.1.min.js"></script>
+    <script src="/assets/highlights/highlight.pack.js"></script>
+    <script>hljs.initHighlightingOnLoad();</script>
+    <script type="module" src="./radialIndicatorExamples.js"></script>
+</head>
+<body>
+<div class="container">
+    <h2>Content</h2>
+    <nav>
+        <ul>
+            <li><a href="#initalization">Initialization & Interaction With Indicator</a></li>
+            <li><a href="#options">Options</a></li>
+            <li><a href="#examples">Radial Indicator Examples</a>
+                <ul>
+                    <li><a href="#no-config">No Config</a></li>
+                    <li><a href="#some-config">Some Config</a></li>
+                    <li><a href="#color-range">Color Range</a></li>
+                    <li><a href="#duration">Duration</a></li>
+                    <li><a href="#easing">Easing</a></li>
+                    <li><a href="#min-max">Min & Max Value</a></li>
+                    <li><a href="#formatting">Formatting</a></li>
+                    <li><a href="#image-content">Image or other content inside indicator</a></li>
+                    <li><a href="#clock">Clock</a></li>
+                    <li><a href="#upload">File Upload</a></li>
+                </ul>
+            </li>
+            <li><a href="#angular-support">Angular JS Support</a>
+                <ul>
+                    <li><a href="#angular-usage">Usage</a></li>
+                    <li><a href="#angular-binding">Binding indicator with a modal</a></li>
+                    <li><a href="#angular-di">Getting instance of indicator through DI</a></li>
+                </ul>
+            </li>
+        </ul>
+    </nav>
+    <h1>Radial Indicator</h1>
+    <h2 id="initalization">Initialization & Interaction With Indicator</h2>
+    <h3>Initalizing in plain JS</h3>
+    <pre><code class="javascript">
+radialIndicator(".indicatorContainer", {}); // second parameter "options" is optional
+            </code></pre>
+    <h3>Initalizing with JQuery</h3>
+    <pre><code class="javascript">
+$('#indicatorContainer').radialIndicator({}); // second parameter "options" is optional
+            </code></pre>
+    <h3>Getting instance with JQuery</h3>
+    <pre><code class="javascript">
+const radialObj = $('#indicatorContainer').data('radialIndicator');
+radialObj.animate(60); // now you can use instance to call different method on the radial indicator
+            </code></pre>
+    <h3>Getting instance with plain JS</h3>
+    <pre><code class="javascript">
+const radialObj = radialIndicator('#indicatorContainer');
+            </code></pre>
+    <h3>Get or change an option on existing indicator</h3>
+    <pre><code class="javascript">
+//getter
+const interpolate = radialObj.option('interpolate');
+
+//setter
+radialObj.option('interpolate',false);
+radialObj.option('radius',60);
+            </code></pre>
+    <h3>Set default option globally</h3>
+    <pre><code class="javascript">
+radialIndicator.defaults.radius = 80;
+radialIndicator.defaults.barColor = "#99CC33";
+            </code></pre>
+    <h3>Set the value of an indicator</h3>
+    <pre><code class="javascript">
+//getter
+const curProgress = radialObj.value();
+
+//setter
+radialObj.value(80);
+            </code></pre>
+    <h3>Set the value of an indicator with animation</h3>
+    <pre><code class="javascript">
+radialObj.animate(80);
+            </code></pre>
+    <h2 id="options">Options</h2>
+    <table>
+        <tbody>
+        <tr>
+            <th>Option</th>
+            <th>Allowed Value</th>
+            <th>Default</th>
+            <th>Description</th>
+        </tr>
+        <tr>
+            <td>radius</td>
+            <td>number</td>
+            <td>50</td>
+            <td>Define inner radius of indicator.</td>
+        </tr>
+        <tr>
+            <td>barWidth</td>
+            <td>number</td>
+            <td>5</td>
+            <td>Define width of the radial bar.</td>
+        </tr>
+        <tr>
+            <td>barBgColor</td>
+            <td>colour code in hex</td>
+            <td>#eeeeee</td>
+            <td>Define background color to radial bar.</td>
+        </tr>
+        <tr>
+            <td>barColor</td>
+            <td>object of colour range like ({0 : '#FF0000', 50 : '#FFFF00', 100 : '#0066FF',}) or color code in hex</td>
+            <td>#99CC33</td>
+            <td>Define the bar color. If object of color range is provided as value it interpolate color as per color range (if interpolate option is true or else just show the upper limit color) at a specific point.</td>
+        </tr>
+        <tr>
+            <td>roundCorner</td>
+            <td>boolean</td>
+            <td>false</td>
+            <td>If true have rounded corners for circular bars.</td>
+        </tr>
+        <tr>
+            <td>displayNumber</td>
+            <td>boolean</td>
+            <td>true</td>
+            <td>If true show the indicator number.</td>
+        </tr>
+        <tr>
+            <td>duration</td>
+            <td>number</td>
+            <td>with percentage 100 without 500</td>
+            <td>duration in ms from 0 to 100%</td>
+        </tr>
+        <tr>
+            <td>easing</td>
+            <td>function</td>
+            <td>(t) => {return t;}</td>
+            <td>Function with progress param, returns updated progress. Default linear</td>
+        </tr>
+        <tr>
+            <td>format</td>
+            <td># format like (##,###,###) or a formatter function</td>
+            <td>##</td>
+            <td>Define # format or formatter function to format indicator number.</td>
+        </tr>
+        <tr>
+            <td>frameNum</td>
+            <td>number</td>
+            <td>100 for percentage and 500 for others</td>
+            <td>Number of frames in which indcator circle is divided.</td>
+        </tr>
+        <tr>
+            <td>frameTime</td>
+            <td>number</td>
+            <td>10</td>
+            <td>Time taken to go from one frame to another.</td>
+        </tr>
+        <tr>
+            <td>fontColor</td>
+            <td>hex color code</td>
+            <td>color code of progress</td>
+            <td>By default it takes the color code of progress at specific point. If defined it will take the defined color code.</td>
+        </tr>
+        <tr>
+            <td>fontSize</td>
+            <td>number</td>
+            <td>Calculated</td>
+            <td>By default font size is calculated to fit indicator inside circle. Defining this will override the calculated one.</td>
+        </tr>
+        <tr>
+            <td>fontFamily</td>
+            <td>font family similiar to per css syntax</td>
+            <td>default</td>
+            <td>Define font family for indicator number.</td>
+        </tr>
+        <tr>
+            <td>fontWeight</td>
+            <td>font weight similiar to css syntax</td>
+            <td>bold</td>
+            <td>Define font weight for indicator number.</td>
+        </tr>
+        <tr>
+            <td>interaction</td>
+            <td>boolean</td>
+            <td>false</td>
+            <td>If true interaction via touch / mouse allowed.</td>
+        </tr>
+        <tr>
+            <td>interpolate</td>
+            <td>boolean</td>
+            <td>true</td>
+            <td>If true interpolate color according to color range.</td>
+        </tr>
+        <tr>
+            <td>initValue</td>
+            <td>number</td>
+            <td>minValue or 0</td>
+            <td>Initial indicator value which you want to display on progress bar.</td>
+        </tr>
+        <tr>
+            <td>minValue</td>
+            <td>number</td>
+            <td>0</td>
+            <td>Minimum value of indicator.</td>
+        </tr>
+        <tr>
+            <td>maxValue</td>
+            <td>number</td>
+            <td>100</td>
+            <td>Maximum value of indicator.</td>
+        </tr>
+        <tr>
+            <td>onChange</td>
+            <td>function</td>
+            <td>() => {}</td>
+            <td>Executed after each iteration.</td>
+        </tr>
+        <tr>
+            <td>percentage</td>
+            <td>boolean</td>
+            <td>true</td>
+            <td>If true show the percentage number.</td>
+        </tr>
+        <tr>
+            <td>precision</td>
+            <td>number</td>
+            <td>0</td>
+            <td>Decimal places in indicators displayed value</td>
+        </tr>
+        <tr>
+            <td>textBaseline</td>
+            <td>string</td>
+            <td>'middle'</td>
+            <td>text baseline of indicator number</td>
+        </tr>
+        </tbody>
+    </table>
+    <h2 id="examples">Radial Indicator Examples</h2>
+    <div class="info">
+        <div class="no-config">
+            <h3 id="no-config">No Config</h3>
+            <div class="indicator"></div>
+            <div class="actions">
+                <input class="input" type="number" value="0"/>
+                <button class="button">Animate</button>
+            </div>
+        </div>
+    </div>
+    <div class="info">
+        <div class="some-config">
+            <h3 id="some-config">Some Config</h3>
+            <div class="indicator"></div>
+            <div class="actions">
+                <input class="input" type="number" value="0"/>
+                <button class="button">Animate</button>
+            </div>
+            <pre><code>
+radialIndicator(".indicatorContainer", {
+  barColor: '#87CEEB',
+  barWidth: 10,
+  initValue: 40,
+  roundCorner : true,
+  percentage: true
+});
+            </code></pre>
+        </div>
+    </div>
+    <div class="info">
+        <div class="no-number">
+            <h3 id ="no-number">No Number</h3>
+            <div class="indicator"></div>
+            <div class="actions">
+                <input class="input" type="number" value="40"/>
+                <button class="button">Animate</button>
+            </div>
+            <pre><code>
+radialIndicator(".indicatorContainer", {
+  displayNumber: false,
+  initValue: 40
+});
+            </code></pre>
+        </div>
+    </div>
+    <div class="info">
+        <div class="color-range">
+            <h3 id = "color-range">Color Range</h3>
+            <div class="indicator"></div>
+            <div class="actions">
+                <input class="input" type="number" value="70"/>
+                <button class="button">Animate</button>
+            </div>
+            <pre><code>
+radialIndicator(".indicatorContainer", {
+    barColor: {
+        0: '#FF0000',
+        33: '#FFFF00',
+        66: '#0066FF',
+        100: '#33CC33'
+    },
+    initValue: 70,
+    percentage: true
+});
+            </code></pre>
+        </div>
+    </div>
+    <div class="info">
+        <div class="duration">
+            <h3 id = "duration">Duration</h3>
+            <div class="indicator"></div>
+            <div class="actions">
+                <input class="input" type="number" value="0"/>
+                <button class="button">Animate</button>
+            </div>
+            <p>You can either define the duration from 0 to 100% via properties. Every animate() call then calculates
+                the
+                duration</p>
+            <pre><code>
+radialIndicator(".indicatorContainer", {
+  duration: 5000 // ms
+});
+            </code></pre>
+            <p>Or via animates second optional duration property in milliseconds. To set a duration from current to the
+                target value</p>
+            <pre><code>
+radialIndicator.animate(90, 400);
+            </code></pre>
+        </div>
+    </div>
+    <div class="info">
+        <div class="easing">
+            <h3 id="easing">Easing</h3>
+            <div class="indicator"></div>
+            <div class="actions">
+                <input class="input" type="number" value="0"/>
+                <button class="button">Animate</button>
+            </div>
+            <p>You can pass your own easing function that takes a progress parameter and returns the updated progress. Take
+                a look at <a href="https://gist.github.com/gre/1650294">this</a> gist</p>
+            <pre><code>
+radialIndicator(".indicatorContainer", {
+  easing: (t) => { return t*t }
+});
+            </code></pre>
+            <p>Or via <a href="https://www.npmjs.com/package/bezier-easing">this</a> npm package</p>
+            <pre><code>
+radialIndicator(".indicatorContainer", {
+  easing: new BezierEasing(x, x, x, x)
+});
+            </code></pre>
+        </div>
+    </div>
+    <div class="info">
+        <div class="min-max">
+            <h3 id = "min-max">Min & Max Value</h3>
+            <div class="indicator"></div>
+            <div class="actions">
+                <input class="input" type="number" value="1000"/>
+                <button class="button">Animate</button>
+            </div>
+            <pre><code>
+radialIndicator(".indicatorContainer", {
+  minValue: 1000,
+  maxValue: 100000
+});
+            </code></pre>
+        </div>
+    </div>
+    <div class="info">
+        <div class="formatting">
+            <h3 id="formatting">Formatting</h3>
+            <div class="indicator"></div>
+            <div class="actions">
+                <input class="input" type="number" value="750000"/>
+                <button class="button">Animate</button>
+            </div>
+            <pre><code>
+radialIndicator(".indicatorContainer", {
+    radius: 70,
+    initValue: 750000,
+    minValue: 10000,
+    maxValue: 10000000,
+    format: '##,###,###'
+});
+            </code></pre>
+        </div>
+    </div>
+    <div class="info">
+        <div class="image-content">
+            <h3 id="image-content">Image or other content inside indicator</h3>
+            <div id="indicatorWrapper">
+                <div id="indicatorImage"></div>
+                <img src="/assets/indicator_img_content.png" alt="indicator image" id="prgLogo"/>
+            </div>
+            <div class="actions">
+                <input class="input" type="number" value="0"/>
+                <button class="button">Animate</button>
+            </div>
+            <p>Wrap your content and the indicator inside a wrapper</p>
+            <pre><code class="html">
+&lt;pre&gt;&lt;code&gt;&lt;div id=&quot;indicatorContainerWrap&quot;&gt;
+    &lt;div id=&quot;indicatorContainer&quot;&gt;&lt;/div&gt;
+    &lt;img src=&quot;assets/images/lab_exp.png&quot;  id=&quot;prgLogo&quot;/&gt;
+&lt;/div&gt;&lt;/code&gt;&lt;/pre&gt;
+            </code></pre>
+            <p>Then add the following css</p>
+            <pre><code class="css">
+#indicatorContainerWrap, #indicatorContainer {
+    display: inline-block;
+    position: relative;
+}
+
+#prgLogo {
+    position: absolute;
+    width: 60px;
+    height: 60px;
+    margin-top: -30px;
+    margin-left: 30px;
+    top: 50%;
+}
+            </code></pre>
+        </div>
+    </div>
+    <div class="info">
+        <div class="clock">
+            <h3 id="clock">A clock example</h3>
+            <div class="indicator"></div>
+            <pre><code>
+const clock = radialIndicator(".indicatorContainer", {
+    radius: 60,
+    barWidth: 5,
+    barColor: '#FF0000',
+    minValue: 0,
+    maxValue: 60,
+    fontWeight: 'normal',
+    roundCorner: true,
+    format: function (value) {
+        const date = new Date();
+        return date.getHours() + ':' + date.getMinutes();
+    }
+});
+
+setInterval(() => {
+  clock.value(new Date().getSeconds() + 1);
+}, 1000);
+            </code></pre>
+        </div>
+    </div>
+    <div class="info">
+        <div class="upload">
+            <h3 id="upload">File Upload</h3>
+            <div id="uploadIndicatorWrapper">
+                <div class="rad-prg" id="uploadIndicator"></div>
+                <div class="rad-cntnt">Click / Drop file to select.</div>
+                <input type="file" id="prgFileSelector" />
+            </div>
+            <h3>HTML</h3>
+            <pre><code class="html">
+&lt;div id=&quot;indicatorContainerWrap&quot;&gt;
+    &lt;div class=&quot;rad-prg&quot; id=&quot;indicatorContainer&quot;&gt;&lt;/div&gt;
+    &lt;div class=&quot;rad-cntnt&quot;&gt;Click / Drop file to select.&lt;/div&gt;
+    &lt;input type=&quot;file&quot; id=&quot;prgFileSelector&quot; /&gt;
+&lt;/div&gt;
+            </code></pre>
+            <h3>CSS</h3>
+            <pre><code class="css">
+#indicatorContainerWrap {
+    position: relative;
+    display: inline-block;
+}
+
+.rad-cntnt {
+    position: absolute;
+    display: table;
+    vertical-align: middle;
+    text-align: center;
+    width: 100%;
+    top: 50%;
+    -webkit-transform: translateY(-50%);
+    -moz-transform: translateY(-50%);
+    -ms-transform: translateY(-50%);
+    -o-transform: translateY(-50%);
+    transform: translateY(-50%);
+    font-size: 20px;
+    line-height: 24px;
+}
+
+
+#prgFileSelector {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    opacity: 0;
+    top: 0;
+    left: 0;
+    z-index: 10;
+}
+            </code></pre>
+            <h3>JS</h3>
+            <pre><code>
+//file upload example
+const container = $('#indicatorContainerWrap'),
+    msgHolder = container.find('.rad-cntnt'),
+    containerProg = container.radialIndicator({
+        radius: 100,
+        percentage: true,
+        displayNumber: false
+    }).data('radialIndicator');
+
+
+container.on({
+    'dragenter': function (e) {
+        msgHolder.html("Drop here");
+    },
+    'dragleave': function (e) {
+        msgHolder.html("Click / Drop file to select.");
+    },
+    'drop': function (e) {
+        e.preventDefault();
+        handleFileUpload(e.originalEvent.dataTransfer.files);
+    }
+});
+
+$('#prgFileSelector').on('change', function () {
+    handleFileUpload(this.files);
+});
+
+function handleFileUpload(files) {
+    msgHolder.hide();
+    containerProg.option('displayNumber', true);
+
+    const file = files[0],
+        fd = new FormData();
+
+    fd.append('file', file);
+
+
+    $.ajax({
+        url: 'service/upload.php',
+        type: 'POST',
+        data: fd,
+        processData: false,
+        contentType: false,
+        success: function () {
+            containerProg.option('displayNumber', false);
+            msgHolder.show().html('File upload done.');
+        },
+        xhr: function () {
+            const xhr = new window.XMLHttpRequest();
+            //Upload progress
+            xhr.upload.addEventListener("progress", function (e) {
+                if (e.lengthComputable) {
+                    const percentComplete = (e.loaded || e.position) * 100 / e.total;
+                    //Do something with upload progress
+                    console.log(percentComplete);
+                    containerProg.animate(percentComplete);
+                }
+            }, false);
+
+            return xhr;
+        }
+    });
+
+}
+            </code></pre>
+        </div>
+    </div>
+    <h2 id="angular-support">Angular JS Support</h2>
+    <p>Include angular.radialIndicator.js along with radialIndicator.js</p>
+    <pre><code>
+&lt;script src=&quot;radialIndicator.js&quot;&gt;&lt;/script&gt;
+&lt;script src=&quot;angular.radialIndicator.js&quot;&gt;&lt;/script&gt;
+    </code></pre>
+    <h3 id="angular-usage">Usage</h3>
+    <pre><code>
+&lt;div ng-app=&quot;myApp&quot; ng-controller=&quot;demo&quot;&gt;
+    &lt;div data-radial-indicator=&quot;&quot;&gt;&lt;/div&gt;
+    &lt;div data-radial-indicator=&quot;{radius : 80, percentage :true,barColor : '#87CEEB', initValue: 70}&quot;&gt;&lt;/div&gt;
+    &lt;div data-radial-indicator=&quot;indicatorOption&quot;&gt;&lt;/div&gt;
+&lt;/div&gt;
+    </code></pre>
+    <pre><code>
+angular.module('myApp', ['ng-sortable','radialIndicator'])
+    .controller('demo', ['$scope', function ($scope) {
+        $scope.indicatorOption = {
+                radius : 80,
+                percentage :true,
+                barColor : "#87CEEB",
+                initValue : 70
+        };
+    }]);
+    </code></pre>
+    <h3 id="angular-binding">Binding indicator with a modal</h3>
+    <p>You can give the name of modal which you want to bind with indicator in radial-indicator-model attribute,
+        and idicator will watch the model change and update value accordingly.</p>
+    <pre><code>
+&lt;div ng-app=&quot;myApp&quot; ng-controller=&quot;demo&quot;&gt;
+    &lt;div data-radial-indicator=&quot;indicatorOption&quot; data-radial-indicator-model=&quot;indicatorValue&quot;&gt;&lt;/div&gt;
+&lt;/div&gt;
+    </code></pre>
+    <pre><code>
+angular.module('myApp', ['ng-sortable','radialIndicator'])
+.controller('demo', ['$scope', function ($scope) {
+    $scope.indicatorOption = {
+            radius : 80,
+            percentage :true,
+            barColor : "#87CEEB"
+    };
+
+    $scope.indicatorValue = 70;
+}]);
+    </code></pre>
+    <h3 id="angular-di">Getting instance of indicator through DI</h3>
+    <p>You can inject radialIndicatorInstance to any controller, directive or service to get instance of radialIndicator and
+        modify it on runtime. In order to get instance of radial indicator you have to define id as shown below.</p>
+    <pre><code>
+&lt;div ng-app=&quot;myApp&quot; ng-controller=&quot;demo&quot;&gt;
+    &lt;div data-radial-indicator=&quot;indicatorOption&quot; data-radial-indicator-id=&quot;indicator1&quot;&gt;&lt;/div&gt;
+    &lt;button data-ng-click=&quot;changeValue(30)&quot;&gt;&lt;/button&gt;
+&lt;/div&gt;
+    </code></pre>
+    <pre><code>
+angular.module('myApp', ['ng-sortable', 'radialIndicator'])
+    .controller('demo', ['$scope', 'radialIndicatorInstance', function($scope, radialIndicatorInstance) {
+        $scope.indicatorOption = {
+            percentage: true,
+            barColor: "#87CEEB",
+            initValue : 70
+    };
+
+$scope.changeValue =
+    function(val) {
+        radialIndicatorInstance['indicator1'].animate(30);
+    }
+}]);
+    </code></pre>
+</div>
+</body>
 </html>
