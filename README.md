@@ -10,15 +10,14 @@ npm install @sudhanshu/radial-indicator
 ```
 
 ### For Devs
-When updating the documentation, checkout the repository and follow this
-[this](https://kbroman.org/simple_site/pages/local_test.html) guide to test the site locally.
+When updating the documentation, checkout the repository and run `npm install` and then `npm start` to run examples locally.
 
 ###Major updates
 
 <h5>2.0.0</h5>
 - Added the option to specify an easing function
 - Added the option to specify an animation duration
-- animate(value, anmDuration) has now an optional second parameter to define a duration 
+- animate(value, anmDuration) has now an optional second parameter to define a duration
 from current value to the target value. While the duration property on the indicator is
 the duration from your minValue to maxValue. If you did not set those values default is 0-100.
 - Replaced setInterval with requestAnimationFrame
@@ -28,7 +27,7 @@ the duration from your minValue to maxValue. If you did not set those values def
 
 <h6>Release Notes</h6>
 - Since setInterval() was replaced with requestAnimationFrame() there are
-most likely, but depending on your setup, more iterations than before. Causing 
+most likely, but depending on your setup, more iterations than before. Causing
 a smoother animation. Before this release if no precision property was set, default
 was depending on the step after each iteration. This is no longer the case since we have
 smaller steps with more decimal places. If you do not specify precision on the indicator,
