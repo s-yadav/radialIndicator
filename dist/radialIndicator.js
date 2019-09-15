@@ -1,8 +1,8 @@
 /*
-    radialIndicator.js v 1.4.0
+    radialIndicator.js v 2.0.0
     Author: Sudhanshu Yadav
     Copyright (c) 2015,2016 Sudhanshu Yadav - ignitersworld.com , released under the MIT license.
-    Demo on: ignitersworld.com/lab/radialIndicator.html
+    Updated: Jannik Gysi, 20.08.2019
 */
 ;(function (factory) {
   /** support UMD ***/

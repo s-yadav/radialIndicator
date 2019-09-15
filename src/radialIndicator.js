@@ -13,13 +13,13 @@
     });
   } else if (typeof module === 'object' && module.exports) {
     module.exports = global.document
-        ? factory(require('jquery'), global)
-        : function (w) {
-          if (!w.document) {
-            throw new Error('radialIndiactor requires a window with a document');
-          }
-          return factory(require('jquery')(w), w);
-        };
+      ? factory(require('jquery'), global)
+      : function (w) {
+        if (!w.document) {
+          throw new Error('radialIndiactor requires a window with a document');
+        }
+        return factory(require('jquery')(w), w);
+      };
   } else {
     global.radialIndicator = factory(global.jQuery, global);
   }

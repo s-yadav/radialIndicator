@@ -1,7 +1,7 @@
 {
   "name": "@sudhanshu/radial-indicator",
   "private": false,
-  "version": "1.4.0",
+  "version": "2.0.0",
   "description": "A simple and light weight circular indicator / progressbar plugin.",
   "main": "dist/radialIndicator.js",
   "repository": "https://github.com/s-yadav/radialIndicator.git",
@@ -11,11 +11,18 @@
     "lint": "eslint ./radialIndicator.js --fix",
     "compile": "buble src/radialIndicator.js > dist/radialIndicator.js",
     "uglify": "uglifyjs --compress --mangle  -o dist/radialIndicator.min.js -- dist/radialIndicator.js",
-    "bundle": "yarn compile && yarn uglify"
+    "bundle": "yarn compile && yarn uglify",
+    "start": "webpack-dev-server --open",
+    "build-pages": "NODE_ENV=production webpack",
+    "build": "yarn bundle && yarn build-pages"
   },
   "devDependencies": {
+    "@babel/cli": "^7.6.0",
+    "@babel/core": "^7.6.0",
     "babel-eslint": "^9.0.0",
+    "babel-loader": "^8.0.6",
     "buble": "^0.19.8",
+    "css-loader": "^3.2.0",
     "eslint": "^6.1.0",
     "eslint-config-standard": "^13.0.1",
     "eslint-plugin-import": "^2.18.2",
@@ -23,7 +30,13 @@
     "eslint-plugin-node": "^9.1.0",
     "eslint-plugin-promise": "^4.2.1",
     "eslint-plugin-standard": "^4.0.0",
+    "html-webpack-plugin": "^3.2.0",
     "jest": "^24.8.0",
-    "uglify-js": "^3.6.0"
+    "jquery": "^3.4.1",
+    "style-loader": "^1.0.0",
+    "uglify-js": "^3.6.0",
+    "webpack": "^4.40.2",
+    "webpack-cli": "^3.3.8",
+    "webpack-dev-server": "^3.8.0"
   }
 }

@@ -5,7 +5,6 @@
     <link rel="stylesheet" type="text/css" href="theme.css">
     <link rel="stylesheet" type="text/css" href="/assets/highlights/styles/atom-one-dark.css">
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
-    <script src="http://code.jquery.com/jquery-3.4.1.min.js"></script>
     <script src="/assets/highlights/highlight.pack.js"></script>
     <script>hljs.initHighlightingOnLoad();</script>
     <script type="module" src="./radialIndicatorExamples.js"></script>
@@ -245,20 +244,20 @@ radialObj.animate(80);
         <div class="no-config">
             <h3 id="no-config">No Config</h3>
             <div class="indicator"></div>
-            <div class="actions">
+            <form class="actions" action="javascript:event.preventDefault()">
                 <input class="input" type="number" value="0"/>
                 <button class="button">Animate</button>
-            </div>
+            </form>
         </div>
     </div>
     <div class="info">
         <div class="some-config">
             <h3 id="some-config">Some Config</h3>
             <div class="indicator"></div>
-            <div class="actions">
+            <form class="actions" action="javascript:event.preventDefault()">
                 <input class="input" type="number" value="0"/>
                 <button class="button">Animate</button>
-            </div>
+            </form>
             <pre><code>
 radialIndicator(".indicatorContainer", {
   barColor: '#87CEEB',
@@ -274,10 +273,10 @@ radialIndicator(".indicatorContainer", {
         <div class="no-number">
             <h3 id ="no-number">No Number</h3>
             <div class="indicator"></div>
-            <div class="actions">
+            <form class="actions" action="javascript:event.preventDefault()">
                 <input class="input" type="number" value="40"/>
                 <button class="button">Animate</button>
-            </div>
+            </form>
             <pre><code>
 radialIndicator(".indicatorContainer", {
   displayNumber: false,
@@ -290,10 +289,10 @@ radialIndicator(".indicatorContainer", {
         <div class="color-range">
             <h3 id = "color-range">Color Range</h3>
             <div class="indicator"></div>
-            <div class="actions">
+            <form class="actions" action="javascript:event.preventDefault()">
                 <input class="input" type="number" value="70"/>
                 <button class="button">Animate</button>
-            </div>
+            </form>
             <pre><code>
 radialIndicator(".indicatorContainer", {
     barColor: {
@@ -312,10 +311,10 @@ radialIndicator(".indicatorContainer", {
         <div class="duration">
             <h3 id = "duration">Duration</h3>
             <div class="indicator"></div>
-            <div class="actions">
+            <form class="actions" action="javascript:event.preventDefault()">
                 <input class="input" type="number" value="0"/>
                 <button class="button">Animate</button>
-            </div>
+            </form>
             <p>You can either define the duration from 0 to 100% via properties. Every animate() call then calculates
                 the
                 duration</p>
@@ -335,10 +334,10 @@ radialIndicator.animate(90, 400);
         <div class="easing">
             <h3 id="easing">Easing</h3>
             <div class="indicator"></div>
-            <div class="actions">
+            <form class="actions" action="javascript:event.preventDefault()">
                 <input class="input" type="number" value="0"/>
                 <button class="button">Animate</button>
-            </div>
+            </form>
             <p>You can pass your own easing function that takes a progress parameter and returns the updated progress. Take
                 a look at <a href="https://gist.github.com/gre/1650294">this</a> gist</p>
             <pre><code>
@@ -358,10 +357,10 @@ radialIndicator(".indicatorContainer", {
         <div class="min-max">
             <h3 id = "min-max">Min & Max Value</h3>
             <div class="indicator"></div>
-            <div class="actions">
+            <form class="actions" action="javascript:event.preventDefault()">
                 <input class="input" type="number" value="1000"/>
                 <button class="button">Animate</button>
-            </div>
+            </form>
             <pre><code>
 radialIndicator(".indicatorContainer", {
   minValue: 1000,
@@ -374,10 +373,10 @@ radialIndicator(".indicatorContainer", {
         <div class="formatting">
             <h3 id="formatting">Formatting</h3>
             <div class="indicator"></div>
-            <div class="actions">
+            <form class="actions" action="javascript:event.preventDefault()">
                 <input class="input" type="number" value="750000"/>
                 <button class="button">Animate</button>
-            </div>
+            </form>
             <pre><code>
 radialIndicator(".indicatorContainer", {
     radius: 70,
@@ -396,10 +395,10 @@ radialIndicator(".indicatorContainer", {
                 <div id="indicatorImage"></div>
                 <img src="/assets/indicator_img_content.png" alt="indicator image" id="prgLogo"/>
             </div>
-            <div class="actions">
+            <form class="actions" action="javascript:event.preventDefault()">
                 <input class="input" type="number" value="0"/>
                 <button class="button">Animate</button>
-            </div>
+            </form>
             <p>Wrap your content and the indicator inside a wrapper</p>
             <pre><code class="html">
 &lt;pre&gt;&lt;code&gt;&lt;div id=&quot;indicatorContainerWrap&quot;&gt;
@@ -639,5 +638,5 @@ $scope.changeValue =
 }]);
     </code></pre>
 </div>
-</body>
+<script type="text/javascript" src="bundle.js"></script></body>
 </html>
